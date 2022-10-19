@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:linkus/screens/chatscreen%20Files/groupmemberlist.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Landing Files/widgets.dart';
 import '../filters/mediaFilter.dart';
 import 'package:encrypt/encrypt.dart';
@@ -27,6 +29,8 @@ import '../attachmentWidgets/attachmentForGroupChat.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'NewGroup.dart';
+
 class groupChat extends StatefulWidget {
   var names;
   var images;
@@ -37,6 +41,7 @@ class groupChat extends StatefulWidget {
   final GroupNames;
   final GroupKey;
   final senderName;
+
   groupChat(
       {super.key,
       this.images,
@@ -82,6 +87,10 @@ class _groupChatState extends State<groupChat> {
   var DecryptedData;
   var replyerName;
   var rcvrnmefrmApi;
+  var memberlength;
+  String? memberslength;
+  var groupmemblist = [];
+  var formattedTime;
   FlutterSoundPlayer myPlayer = FlutterSoundPlayer();
   scrollToDown() {
     setState(() {
@@ -94,6 +103,9 @@ class _groupChatState extends State<groupChat> {
 
   @override
   void initState() {
+    _groupmemblist();
+   
+
     LoadChatHistory();
 
     super.initState();
@@ -147,7 +159,7 @@ class _groupChatState extends State<groupChat> {
       "Accept": "application/json",
       "charset": "utf-8"
     });
-    responseStatusCode = response.statusCode;
+    
     var jsonData = await jsonDecode(response.body);
     print("____________________________${jsonData.length}");
 
@@ -156,8 +168,7 @@ class _groupChatState extends State<groupChat> {
       groupKey = jsonData[i]["groupkey"];
       sentby = jsonData[i]["sentby"];
       rcvrnmefrmApi = jsonData[i]["replydisplayname"];
-      print(
-          ":::::::::::::::::::::::::::::::::::::::${jsonData[i]["replydisplayname"]}");
+      print(":::::::::::::::::::::::::::::::::::::::$groupKey");
 
       final k = encrypt.Key.fromUtf8('H4WtkvK4qyehIe2kjQfH7we1xIHFK67e');
       final iv = encrypt.IV.fromUtf8('HgNRbGHbDSz9T0CC');
@@ -222,7 +233,7 @@ class _groupChatState extends State<groupChat> {
   ConvertingTimeStamp(senttime) {
     final DateTime date = DateTime.fromMillisecondsSinceEpoch(senttime * 1000);
     var format = DateFormat().add_jm();
-    var formattedTime = format.format(date);
+    formattedTime = format.format(date);
 
     return formattedTime.toString();
   }
@@ -560,8 +571,341 @@ class _groupChatState extends State<groupChat> {
         "************************************************************************$statucode");
   }
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   XFile? file;
+
+  _groupmemblist() async {
+    http.Response response = await http.post(Uri.parse(GroupMember), body: {
+      "groupkey": widget.GroupKey.toString(),
+    });
+    groupmemblist = json.decode(response.body);
+    print("----------ABI------------${response.body}");
+ groupmemblist.removeWhere((item) =>
+                                  item['status'] == '0' );
+    memberlength = groupmemblist.length;
+    setState(() {});
+  }
+
+  var name = [];
+  var role = [];
+  var groupmemberlist = [];
+  var photo = [];
+  var mobile = [];
+  var Loginuser;
+  var owner = [];
+  var admin = [];
+  bool show_delete_icon = false;
+  var mobileNumber;
+  var senderName;
+  var GroupNames = [];
+  var GroupImages = [];
+  var GroupCreated = [];
+
+  var GroupKey = [];
+  var GroupName_Length;
+  var Data=[];
+  bool exitGroupButton = false;
+
+  LoadGroupData() async {
+    print("++++++++Something++++++++");
+    final prefs = await SharedPreferences.getInstance();
+    mobileNumber = prefs.getString('mobileNumber');
+    senderName = prefs.getString('username');
+
+    print('--------------->$mobileNumber');
+    print('--------------->$senderName');
+
+    http.Response response = await http.post(Uri.parse(Group_List), body: {
+      'uid': "$mobileNumber",
+    }, headers: {
+      "Content-type": "application/x-www-form-urlencoded",
+      "Accept": "application/json",
+      "charset": "utf-8"
+    });
+
+    print(response.body);
+     Data =  jsonDecode(response.body);
+     Data.clear();
+     GroupImages.clear();
+    GroupNames.clear();
+    GroupImages.clear();
+    GroupKey.clear();
+    GroupCreated.clear();
+   
+    
+
+  
+   
+
+    if (Data != null || Data != []) {
+      // for (var i = Data.length - 1; i >= 0; i--) {
+       for(var i =0; i< Data.length; i++) {
+        GroupNames.add(Data[i]['groupname']);
+        GroupImages.add(Data[i]['groupimage']);
+        GroupKey.add(Data[i]['groupkey']);
+        GroupCreated.add(Data[i]['groupcreated']);
+      }
+    }
+    print('--------->${GroupNames.length}');
+    print('--------->${GroupKey.length}');
+    // setState(() {
+    //   GroupName_Length = GroupNames.length;
+    //   print('--------->$GroupName_Length');
+    // });
+  }
+//  grpmember() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     Loginuser = prefs.getString('mobileNumber');
+//     print("----number-------$Loginuser");
+
+//     http.Response response = await http.post(Uri.parse(GroupMember), body: {
+//       "groupkey": widget.GroupKey.toString(),
+//     });
+//     groupmemblist.clear();
+//     name.clear();
+//     photo.clear();
+//     mobile.clear();
+//     role.clear();
+//     owner.clear();
+   
+
+//     groupmemblist = json.decode(response.body);
+
+//     groupmemblist.removeWhere((item) => item['status'] == '0');
+//     print("-----------$groupmemblist-------");
+//     groupmemblist.forEach((user) => {
+//           // if(user['status'].toString() == '1') {
+//           name.add(user['username'].toString()),
+//           photo.add(user["photourl"].toString()),
+//           role.add(user["designation"]),
+//           mobile.add(user["uid"].toString()),
+//            owner.add(user["owner"].toString()),
+//            if (
+//          (user["owner"]) == Loginuser ) {
+//         print("8838748734"),
+//         show_delete_icon = true,
+//       }
+//        else{
+//            print("77777777777777"),
+//         show_delete_icon=false,
+//        },
+//     print("!111111111111222222222$owner"),     
+//         });
+        
+
+//     setState(() {});
+//   }
+
+ 
+  grpmember() async {
+    final prefs = await SharedPreferences.getInstance();
+    Loginuser = prefs.getString('mobileNumber');
+    print("----number-------$Loginuser");
+
+    http.Response response = await http.post(Uri.parse(GroupMember), body: {
+      "groupkey": widget.GroupKey.toString(),
+    });
+   
+    groupmemberlist.clear();
+   name.clear();
+    role.clear();
+    photo.clear();
+    mobile.clear();
+    owner.clear();
+ 
+    groupmemberlist = json.decode(response.body);
+   groupmemblist.removeWhere((item) =>
+                                  item['status'] == '0' );
+   
+    print("555555555551111111111${groupmemblist}");
+
+    // for (var i = 0; i < groupmemberlist.length; i++) {
+    //   name.add(groupmemberlist[i]['username'].toString());
+    //   photo.add(groupmemberlist[i]["photourl"].toString());
+    //   role.add(groupmemberlist[i]["designation"]);
+    //   mobile.add(groupmemberlist[i]["uid"].toString());
+    //   owner.add(groupmemberlist[i]["owner"].toString());
+     groupmemblist.forEach((user) => {
+           if(user['status'].toString() == '1') {
+          name.add(user['username'].toString()),
+          photo.add(user["photourl"].toString()),
+          role.add(user["designation"]),
+          mobile.add(user["uid"].toString()),
+           owner.add(user["owner"].toString()),
+         
+      print('---------------NAME--------${name}'),
+    
+         print("555555555551111111111${user["status"]}"),
+         setState(() {}),
+  for(var i =0;i<owner.length;i++){
+      print("=======${owner[i]},${Loginuser}"),
+      if(owner[i] == Loginuser) {
+        show_delete_icon = true,
+      }
+    },
+
+    for(var i =0;i<mobile.length;i++){
+      print("=======${mobile[i]},${Loginuser}"),
+      if(mobile[i] == Loginuser) {
+        exitGroupButton = true,
+      }
+    },
+  print("-------abi----------${mobile}")
+   } 
+   
+   },
+    
+   );
+  
+  }
+
+
+  exit_group() async {
+    var time = DateTime.now().millisecondsSinceEpoch;
+    var timeStamp = ConvertingTimeStamp(time);
+      showDialog(
+        context: context,
+        builder: (bc) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
+    var data = {
+      "exittimestamp": time.toString(),
+      "groupkey": widget.GroupKey.toString(),
+      "status": "0",
+      "uid": Loginuser.toString(),
+    };
+    print("*******=========*****$data");
+    http.Response response = await http.post(Uri.parse(exitGroup), body: data);
+    print("--------Exit----${response.body}");
+    if (response.statusCode == 200) {
+      
+      Future.delayed(Duration(seconds: 1)).then((value) {
+         Navigator.pop(context);
+      Navigator.pop(context);
+     
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                content: Text(
+                  " You have Exit from ${widget.GroupNames} Group",
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: InkWell(
+                      child: Text(
+                        "OK",
+                        style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                       
+                      
+                      },
+                    ),
+                  )
+                ]);
+          });
+          setState(() {
+            
+          });
+      
+      });};}
+    
+  
+  delete_group() async {
+    var time = DateTime.now().millisecondsSinceEpoch;
+    var timeStamp = ConvertingTimeStamp(time);
+      showDialog(
+        context: context,
+        builder: (bc) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
+    Map data = {
+      "exittimestamp": timeStamp.toString(),
+      "groupkey": widget.GroupKey.toString(),
+      "status": "0",
+      "uid": Loginuser.toString(),
+    };
+    print("************$data");
+    http.Response response =
+        await http.post(Uri.parse(delete_groupchat), body: data);
+    print("--------delete----${response.body}");
+    if (response.statusCode == 200) {
+       http.Response response1 =
+          await http.post(Uri.parse(delete_Group), body: data);
+      print("--------delete----${response1.body}");
+        Navigator.pop(context);
+      Navigator.pop(context);
+        
+    
+    Future.delayed(Duration(seconds: 00)).then((value){
+       Navigator.pop(context);
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                content: Text(
+                  " Successfully deleted ${widget.GroupNames}",
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: InkWell(
+                      child: Text(
+                        "OK",
+                        style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      onTap: () {
+                          LoadGroupData();
+                         Navigator.pop(context);
+                       
+                       
+                      },
+                    ),
+                  )
+                ]);
+          });
+
+      print("-----time-$time,${widget.GroupKey}");
+     
+       
+      
+
+      setState(() {});
+  });}}
+     
+     
+
+    
+  
 
   @override
   bool get wantKeepAlive => true;
@@ -578,7 +922,253 @@ class _groupChatState extends State<groupChat> {
             width: double.infinity,
             height: double.infinity,
             child: Scaffold(
-                // key: _scaffoldKey,
+                key: _scaffoldKey,
+                endDrawer: Drawer(
+                  child: InkWell(
+                    child: ListView(
+                      // Important: Remove any padding from the ListView.
+                      //  padding: EdgeInsets.zero,
+
+                      children: [
+                        Container(
+                          height: 70,
+                          child: DrawerHeader(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  widget.GroupNames,
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
+                                ),
+                                InkWell(
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 25,
+                                    color: Colors.white,
+                                  ),
+                                  onTap: () {
+                                     
+                                    Navigator.pop(context);
+                                  },
+                                )
+                              ],
+                            ),
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(1, 123, 255, 1),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        CircleAvatar(
+                          radius: 40,
+                          child: ClipOval(
+                            child: CachedNetworkImage(
+                              fit: BoxFit.cover,
+                              imageUrl: widget.GroupImages,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) =>
+                                      CircularProgressIndicator(
+                                          value: downloadProgress.progress),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.groups_rounded,
+                                size: 35,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 50,
+                        ),
+                        ListTile(
+                          leading: Icon(
+                            Icons.person_add,
+                            size: 25,
+                            color: Colors.black,
+                          ),
+                          title: Text(
+                            'Add member',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NewGroup(
+                                  hidegroupname: widget.GroupNames,
+                                  groupKey: widget.GroupKey,
+                                ),
+                              ),
+                            );
+                            _groupmemblist();
+                          },
+                        ),
+                        Divider(
+                          thickness: 1,
+                          height: 4,
+                        ),
+                        ListTile(
+                          leading: Icon(
+                            Icons.group_rounded,
+                            size: 25,
+                            color: Colors.black,
+                          ),
+                          title: Text(
+                            'Group members',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          onTap: () {
+                         
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GroupMemberList(
+                                          grpkey: widget.GroupKey,
+                                        )));
+                          },
+                        ),
+                        Divider(
+                          thickness: 1,
+                          height: 4,
+                        ),
+                    
+                
+                  exitGroupButton==true?  
+                  ListTile(
+                          leading: Icon(
+                            Icons.exit_to_app,
+                            size: 25,
+                            color: Colors.black,
+                          ),
+                          title: Text(
+                            'Exit Group',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                      content: Text(
+                                        "Do you want to exit from ${widget.GroupNames} group?",
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.black),
+                                      ),
+                                      actions: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.grey),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text("Cancel")),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                
+                                                    exit_group();
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.grey),
+                                                  child: Text("OK")),
+                                            ],
+                                          ),
+                                        )
+                                      ]);
+                                });
+                          },
+                        ):Container(),
+                       
+                      exitGroupButton==true ?  Divider(
+                          thickness: 1,
+                          height: 4,
+                        ):Container(),
+                    show_delete_icon==true?    ListTile(
+                          //subtitle: Text(show_delete_icon.toString()),
+                          // ignore: unrelated_type_equality_checks
+                          leading: Icon(
+                                  Icons.delete,
+                                  size: 25,
+                                  color: Colors.black,
+                                ),
+                             
+                          // ignore: unrelated_type_equality_checks
+                          title:  Text(
+                                  'Delete group ',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              
+                          onTap: () {
+                            Navigator.pop(context);
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                      content: Text(
+                                        "Do you want to delete ${widget.GroupNames} group?",
+                                        style: TextStyle(
+                                            fontSize: 18, color: Colors.black),
+                                      ),
+                                      actions: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.grey),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text("Cancel")),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              ElevatedButton(
+                                                  onPressed: () {
+                                                    delete_group();
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          backgroundColor:
+                                                              Colors.grey),
+                                                  child: Text("OK")),
+                                            ],
+                                          ),
+                                        )
+                                      ]);
+                                });
+                          },
+                        ):Container(),
+                      ],
+                    ),
+                    onTap: () {
+                       
+                      grpmember();
+                    },
+                  ),
+                ),
                 appBar: AppBar(
                   leading: IconButton(
                       onPressed: () {
@@ -612,8 +1202,30 @@ class _groupChatState extends State<groupChat> {
                         width: 10,
                       ),
                       Expanded(
-                          child: Text(widget.GroupNames,
-                              style: TextStyle(fontSize: 18)))
+                          child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Container(
+                                  child: Text(widget.GroupNames,
+                                   overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontSize: 18)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          memberlength == null
+                              ? Container()
+                              : Row(
+                                  children: [
+                                    Text("${memberlength} members",
+                                        style: TextStyle(fontSize: 15)),
+                                  ],
+                                ),
+                        ],
+                      )),
                     ],
                   ),
                   actions: [
@@ -637,18 +1249,12 @@ class _groupChatState extends State<groupChat> {
                                           height: 0,
                                           text: 'Group Information',
                                           onTap: () {
+                                            
+                                            grpmember();
                                             Navigator.pop(context);
-                                            _scaffoldKey.currentState!
+                                            Scaffold.of(context)
                                                 .openEndDrawer();
-                                            // Navigator.pushAndRemoveUntil<dynamic>(
-                                            //   context,
-                                            //   MaterialPageRoute<dynamic>(
-                                            //     builder: (BuildContext context) =>
-
-                                            //   ),
-                                            //   (route) => true,
-                                            //   //if you want to disable back feature set to false
-                                            // );
+                                                 print("----------Ramiz-----${groupmemblist.length}");
                                           },
                                           Icon: const Icon(Icons.person)),
                                       const PopupMenuDivider()

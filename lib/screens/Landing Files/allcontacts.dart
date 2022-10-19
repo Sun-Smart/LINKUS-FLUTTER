@@ -22,6 +22,7 @@ class allContacts extends StatefulWidget {
 class _allContactsState extends State<allContacts> {
   @override
   Widget build(BuildContext context) {
+    
     return allContactsList(
       buddyId: widget.buddyId,
       mobileNumber: widget.mobileNumber,

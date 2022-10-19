@@ -116,24 +116,7 @@ class _ReplyVoiceCardState extends State<ReplyVoiceCard> {
                                   ))
                               : IconButton(
                                   onPressed: () {
-                                    // myPlayer
-                                    //     .startPlayer(
-                                    //         fromURI:
-                                    //             'https://prod.herbie.ai:8153/uploadFiles/${widget.path}')
-                                    //     .then((value) {
-                                    //   print("then");
-                                    //   print(value);
-                                    // });
-
-                                    // myPlayer.setSubscriptionDuration(
-                                    //     const Duration(milliseconds: 300));
-                                    // myPlayer.onProgress?.listen((event) {
-                                    //   int sec = event.duration.inSeconds;
-                                    //   int posSec = event.position.inSeconds;
-                                    //   setState(() {
-                                    //     _progress = posSec / sec;
-                                    //   });
-                                    // });
+                                    
                                     print("------------PLAYER============");
 
                                     player?.play();

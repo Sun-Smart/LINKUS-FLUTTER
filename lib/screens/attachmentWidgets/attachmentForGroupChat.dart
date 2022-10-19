@@ -191,13 +191,12 @@ class _GroupReplyFileCardState extends State<GroupReplyFileCard> {
 
 class GroupSenderMessageItem extends StatefulWidget {
   const GroupSenderMessageItem(
-      {required this.sentByMe,
+      {super.key, required this.sentByMe,
       required this.message,
       this.path,
       required this.senttime,
       required this.sndBy,
-      required this.MobileNumber})
-      : super();
+      required this.MobileNumber});
   final bool sentByMe;
   final String message;
   final String senttime;

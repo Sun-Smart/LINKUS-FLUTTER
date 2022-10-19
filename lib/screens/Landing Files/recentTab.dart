@@ -16,7 +16,7 @@ class _recentTabState extends State<recentTab> {
   Widget build(BuildContext context) {
     // int index = 0;
     return ChatList(
-      name: widget.name.toString(),
+      name: widget.name,
       onTap: () {},
       ntfctnCnt: CircleAvatar(
           radius: 10,
@@ -25,11 +25,11 @@ class _recentTabState extends State<recentTab> {
             style: TextStyle(fontSize: 10),
           )),
       chtcntLen: 12,
-      msgdte$tme: Text('12/07/22'),
+      msgdte$tme: Text(''),
       contactName: Text(''),
       msgText: Text('Hey broo'),
       profIcon: Icon(Icons.person),
-      ItmCnt: 30,
+     // ItmCnt: 30,
     );
   }
 }

@@ -1,4 +1,4 @@
-package com.example.linkus
+package com.sunsmart.enchat
 
 import io.flutter.embedding.android.FlutterActivity
 

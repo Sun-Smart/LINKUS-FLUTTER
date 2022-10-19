@@ -34,7 +34,7 @@ class _CalenderWidgetState extends State<CalenderWidget> {
     return DateTimePicker(
         firstDate: widget.firstDate,
         type: DateTimePickerType.date,
-        dateMask: 'dd MMMM, yyyy',
+        dateMask: 'dd-MM-yyyy',
         decoration: InputDecoration(
           suffixIcon: Icon(
             widget.icon,
@@ -48,12 +48,15 @@ class _CalenderWidgetState extends State<CalenderWidget> {
           focusedBorder: widget.focusedBorder,
           // hintText: widget.hintText,
         ),
-        initialDate: DateTime.tryParse('01/01/2001'),
+        initialDate: DateTime.tryParse("1990-01-01"),
         lastDate: DateTime(3000),
         validator: (value) {
+
+
           return null;
         },
-        onChanged: (value) {
+        onChanged: ( value) {
+          print(value);
           if (value.isNotEmpty) {
             setState(() {
               _selectedDate = value as DateTime;

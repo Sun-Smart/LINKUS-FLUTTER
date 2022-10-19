@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     if (state == AppLifecycleState.resumed) {
       Status("online");
     } else {
-      Status("offline");
+      Status("offline" );
     }
   }
 

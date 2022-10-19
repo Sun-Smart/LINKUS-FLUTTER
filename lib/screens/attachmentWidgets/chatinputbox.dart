@@ -309,7 +309,7 @@ class _ChatInputBoxState extends State<ChatInputBox> {
             child: SizedBox(
               height: 250.0,
               child: EmojiPicker(
-                  onEmojiSelected: (Category category, Emoji emoji) {
+                  onEmojiSelected: (Category ?category, Emoji emoji) {
                     _onEmojiSelected(emoji);
                   },
                   onBackspacePressed: _onBackspacePressed,
@@ -324,7 +324,7 @@ class _ChatInputBoxState extends State<ChatInputBox> {
                       indicatorColor: Colors.blue,
                       iconColor: Colors.grey,
                       iconColorSelected: Colors.blue,
-                      progressIndicatorColor: Colors.blue,
+                     // progressIndicatorColor: Colors.blue,
                       backspaceColor: Colors.blue,
                       skinToneDialogBgColor: Colors.white,
                       skinToneIndicatorColor: Colors.grey,

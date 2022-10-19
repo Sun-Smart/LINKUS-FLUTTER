@@ -1,18 +1,24 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, non_constant_identifier_names, avoid_print, prefer_const_literals_to_create_immutables
-
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+
+import 'package:intl/intl.dart';
+import 'package:linkus/screens/Login%20Files/loginscreen.dart';
 import 'package:linkus/screens/chatscreen%20Files/dataList.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../variables/Api_Control.dart';
 
 import 'package:http/http.dart' as http;
 
 class NewGroup extends StatefulWidget {
-  const NewGroup({super.key});
+  String? hidegroupname;
+  String? groupKey;
+
+  NewGroup({super.key, this.hidegroupname, this.groupKey});
 
   @override
   State<NewGroup> createState() => _NewGroupState();
@@ -22,32 +28,298 @@ class _NewGroupState extends State<NewGroup> {
   bool isVisible = true;
   bool AddButton = false;
   TextEditingController groupNameController = TextEditingController();
-  // create_group() async {
-  //   Response response = await post(Uri.parse(Create_Group), body: {
-  //     {
-  //       "groupcreated": "Sijin created group",
-  //       "groupimage": "default",
-  //       "groupkey": "e6d81658234569466bf217812cdbd2acc6e05",
-  //       "groupname": "Mohamed Fazil Flutter",
-  //       "groupstatus": "A",
-  //       "opengroup": false,
-  //       "owner": "8903725995",
-  //       "status": "1",
-  //       "timestamp": 1658234569466,
-  //       "uid": "8903725995"
-  //     }
-  //   }, headers: {
-  //     "Content-type": "application/x-www-form-urlencoded",
-  //     "Accept": "application/json",
-  //     "charset": "utf-8"
-  //   });
-  //   // responseStatusCode = response.statusCode;
-  //   print('()()()()()()()()()(${response.body}');
-  //   var Data = jsonDecode(response.body);
-  //   // var Data = d1;
-  //   print('()()()()()()()()()()()()()()()()$Data');
-  //   print(Data.length);
-  // }
+  @override
+  void initState() {
+    testArray.clear();
+
+    super.initState();
+  }
+
+  var mobile;
+  var groupusrname;
+  var groupusername;
+  var mob;
+  var CryptedText;
+  var GroupNames = [];
+  var GroupImages = [];
+  var GroupCreated = [];
+  var GroupName_Length;
+  var grpuser;
+  var responseStatusCode;
+  var grpname1;
+  var grpname;
+
+  int? memberslength;
+
+  var responseStatus;
+  crypto(plainText) {
+    var encoded1 = base64.encode(utf8.encode(plainText));
+    return encoded1;
+  }
+
+  ConvertingTimeStamp(senttime) {
+    final DateTime date = DateTime.fromMillisecondsSinceEpoch(senttime);
+    var format = DateFormat().format(date);
+    //var formattedTime = format.format(date);
+    print("87654356798765$format");
+    return format.toString();
+  }
+
+  CreateGroup() async {
+    print("____________");
+    CryptedText = crypto(groupNameController.text.toString());
+    final prefs = await SharedPreferences.getInstance();
+    groupusername = await prefs.getString('username');
+    mob = prefs.getString('mobileNumber');
+    var time = DateTime.now().millisecondsSinceEpoch;
+    var timeStamp = ConvertingTimeStamp(time);
+    grpname1 = widget.hidegroupname;
+    grpname = groupNameController.text.toString();
+
+    Map data = {
+      "uid": mob.toString(),
+      "groupname": grpname.toString(),
+      "groupkey": CryptedText.toString(),
+      "groupimage": "default",
+      "opengroup": "true",
+      "timestamp": time.toString(),
+      "groupstatus": "A",
+      "owner": mob.toString(),
+      "groupcreated": "${groupusername.toString()} created group",
+      "status": "1"
+    };
+    print("11111111111111111111111111111111111111111$timeStamp");
+    print("1122344551122334455$data");
+    http.Response response = await http.post(
+      Uri.parse(Create_Group),
+      body: data,
+      // body: {
+      //   "uid": mob,
+      //   "groupname": grpname.toString(),
+      //   "groupkey": CryptedText.toString(),
+      //   "groupimage": "default",
+      //   "opengroup": "false",
+      //   "timestamp": timeStamp,
+      //   "groupstatus": "A",
+      //   "owner":mob,
+      //   "groupcreated": "${groupusername.toString()} created group",
+      //   "status": "1"
+      // },
+    );
+    print("----BODY---$time-------");
+
+    print("**********${groupNameController.text}");
+    print("++++++++++++$CryptedText");
+
+    print("++++ertyutrertyuytr+++++${response.body}");
+    //print('-------------------------${body}');
+
+    //LoadGroupData();
+    add_users();
+
+    if (response.statusCode == 200) {
+      // ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      //       const SnackBar(content: Text('Group created Successfully')));
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                content: Text("Group Created Successfully"),
+                actions: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: InkWell(
+                      child: Text(
+                        "OK",
+                        style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      onTap: () {
+                        // Navigator.pop(context);
+                        //  Navigator.pop(context);
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  )
+                ]);
+          });
+    }
+  }
+
+  add_users() async {
+    CryptedText = crypto(groupNameController.text.toString());
+    print('''\n\n\ngroup name: ${groupNameController.text}\n
+    crypted : ${CryptedText}\n\n\n''');
+    print("____________${testArray.length}");
+    memberslength = testArray.length;
+    print("======${memberslength}");
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('members', memberslength.toString());
+
+    groupusrname = await prefs.getString('username');
+    mob = prefs.getString('mobileNumber');
+
+    var time = DateTime.now().millisecondsSinceEpoch;
+
+    var timeStamp = ConvertingTimeStamp(time);
+
+    testArray.forEach((user) async {
+      mobile = user['number'];
+      grpuser = user['name'];
+      print("------******-$username");
+
+      var body = {
+        "uid": mobile.toString(),
+        "groupname": groupNameController.text.toString(),
+        "groupkey": CryptedText.toString(),
+        "groupimage": "default",
+        "opengroup": "true",
+        "timestamp": time.toString(),
+        "groupstatus": "A",
+        "groupcreated":
+            "${groupusrname.toString()} added ${grpuser.toString()}",
+        "status": "1"
+      };
+      print("000000000000000000$body");
+      http.Response response = await http.post(
+        Uri.parse(Create_Group),
+        body: body,
+      );
+      print("nisha---------${response.body}");
+      print("++++++Res+++${response.statusCode}");
+      // statuscode= response.statusCode;
+      responseStatusCode = response.statusCode;
+      print("+++++Status++++${responseStatusCode}");
+    });
+    if (responseStatusCode == 200 || responseStatusCode == null) {
+      print("---------------Good----------------");
+    } else {
+      print("---------------Bad----------------");
+    }
+
+    setState(() {});
+    groupNameController.clear();
+    testArray.clear();
+  }
+
+  add_user_to_group(
+      {required String groupName,
+      required String groupKey,
+      required String mobile,
+      required String groupusrname,
+      required String grpuser}) async {
+    var time = DateTime.now().millisecondsSinceEpoch;
+    var timeStamp = ConvertingTimeStamp(time);
+    final prefs = await SharedPreferences.getInstance();
+    groupusrname = (await prefs.getString('username'))!;
+    showDialog(
+        context: context,
+        builder: (bc) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
+    var body = {
+      "uid": mobile.toString(),
+      "groupname": groupName.toString(),
+      "groupkey": groupKey.toString(),
+      "groupimage": "default",
+      "opengroup": "true",
+      "timestamp": time.toString(),
+      "groupstatus": "A",
+      "groupcreated": "${groupusrname.toString()} added ${grpuser.toString()}",
+      "status": "1"
+    };
+    print("5555555555555$body");
+    http.Response response = await http.post(
+      Uri.parse(Create_Group),
+      body: body,
+    );
+    print("12345r6t78908uiyjghv${time}");
+    print("+++++++++${response.statusCode}");
+    responseStatus = response.statusCode;
+    print("abi---------${response.body}");
+    if (responseStatus == 200) {
+      print("-----------Good----------");
+      // ScaffoldMessenger.maybeOf(context)
+      //     ?.showSnackBar(SnackBar(content: Text('Added Successfully')));
+
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+                content: const Text(
+                  "Added Successfully",
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: InkWell(
+                      child: Text(
+                        "OK",
+                        style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  )
+                ]);
+          });
+    } else {
+      print("-----------Wrong----------");
+    }
+  }
+
+  LoadGroupData() async {
+    final prefs = await SharedPreferences.getInstance();
+    mob = prefs.getString('mobileNumber');
+
+    print('--------------->$mob');
+
+    http.Response response = await http.post(
+      Uri.parse(Group_List),
+      body: {
+        'uid': "$mob",
+      },
+    );
+    responseStatusCode = response.statusCode;
+    print("ahaan$responseStatusCode+++++++++++++");
+    print("-------++++++++++-------${response.body}");
+    var Data = jsonDecode(response.body);
+    // var Data = d1;
+    print("nbvbcxzsdfgthgyujghfdxvcbcbn$Data");
+    print(Data.length);
+    // var ;
+    if (Data != null || Data != []) {
+      for (var i = 0; i < Data.length; i++) {
+        print("ahaannn${Data[i]}");
+        GroupNames.add(Data[i]['groupname']);
+        GroupImages.add(Data[i]['groupimage']);
+        GroupCreated.add(Data[i]['groupcreated']);
+      }
+    }
+    print('--------->$GroupNames');
+    // setState(() {
+    //  // GroupName_Length = GroupNames.length;
+    //   print('--------->$GroupName_Length');
+    // });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +328,10 @@ class _NewGroupState extends State<NewGroup> {
         backgroundColor: const Color.fromRGBO(1, 123, 255, 1),
         leading: IconButton(
             onPressed: () {
+              for (var i = 0; i < contactList.length; i++) {
+                contactList[i].isChecked = false;
+              }
               Navigator.pop(context);
-              setState(() {
-                for (var i = 0; i < listItems.length; i++) {
-                  listItems[i].isChecked = false;
-                }
-              });
             },
             icon: const Icon(
               Icons.arrow_back,
@@ -70,10 +340,24 @@ class _NewGroupState extends State<NewGroup> {
         leadingWidth: 35,
         title: const Text('Contacts'),
         actions: [
-          AddButton == true
+          AddButton == true || widget.hidegroupname != ''
               ? IconButton(
                   onPressed: () {
-                    // create_group();
+                    print(widget.hidegroupname != "");
+                    if (widget.hidegroupname != "") {
+                      print(testArray);
+                      testArray.forEach((user) {
+                        add_user_to_group(
+                            groupusrname: groupusrname ?? "",
+                            groupName: widget.hidegroupname ?? "",
+                            groupKey: widget.groupKey ?? "",
+                            grpuser: user['name'],
+                            mobile: user['number']);
+                      });
+                    } else {
+                      CreateGroup();
+                    }
+                    // add_group();
                   },
                   icon: const Icon(
                     Icons.add,
@@ -92,76 +376,84 @@ class _NewGroupState extends State<NewGroup> {
           ntfctnCnt: null,
           msgdte$tme: const SizedBox(),
           ItmCnt: null,
+          controller: groupNameController,
           onTap: () {}),
-      bottomSheet: TextFormField(
-        onChanged: ((value) {
-          // print('()()()()()()()()()()$value');
-          setState(() {
-            if (value == '') {
-              setState(() {
-                AddButton = false;
-              });
-            } else {
-              AddButton = true;
-            }
-          });
-        }),
-        controller: groupNameController,
-        decoration: InputDecoration(
-            suffixIcon: isVisible
-                ? TextButton(
-                    onPressed: () {
-                      setState(() {
-                        isVisible = true;
-                        for (var i = 0; i < listItems.length; i++) {
-                          if (listItems[i].isChecked == true) {
-                            listItems[i].isChecked = false;
-                          }
-                        }
+      bottomSheet: widget.hidegroupname != ''
+          ? null
+          : TextFormField(
+              onChanged: ((value) {
+                // print('()()()()()()()()()()$value');
+                setState(() {
+                  if (value == '') {
+                    setState(() {
+                      AddButton = false;
+                    });
+                  } else {
+                    AddButton = true;
+                  }
+                });
+              }),
+              controller: groupNameController,
+              decoration: InputDecoration(
+                  suffixIcon: isVisible
+                      ? TextButton(
+                          onPressed: () {
+                            setState(() {
+                              isVisible = true;
+                              for (var i = 0; i < contactList.length; i++) {
+                                if (contactList[i].isChecked == true) {
+                                  contactList[i].isChecked = false;
+                                }
+                              }
 
-                        for (var i = 0; i < listItems.length; i++) {
-                          if (listItems[i].isChecked == true) {
-                            listItems[i].isChecked = true;
-                          } else if (listItems[i].isChecked == false) {
-                            listItems[i].isChecked = true;
-                          }
-                        }
-                        isVisible = false;
-                      });
-                    },
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      child: Text(
-                        'Select all',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w800),
-                      ),
-                    ),
-                  )
-                : InkWell(
-                    onTap: () {
-                      setState(() {
-                        for (var i = 0; i < listItems.length; i++) {
-                          listItems[i].isChecked = false;
-                        }
-                        isVisible = true;
-                      });
-                    },
-                    child: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      child: Text(
-                        'Unselect all',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w800),
-                      ),
-                    ),
-                  ),
-            hintText: 'Type a Group Name',
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
-      ),
+                              for (var i = 0; i < contactList.length; i++) {
+                                if (contactList[i].isChecked == true) {
+                                  contactList[i].isChecked = false;
+                                  print("-------");
+                                } else if (contactList[i].isChecked == false) {
+                                  contactList[i].isChecked = true;
+                                  print("++++++${contactList[i].phonenumber}");
+                                }
+                              }
+                              isVisible = false;
+                            });
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 10),
+                            child: Text(
+                              'Select all',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                        )
+                      : InkWell(
+                          onTap: () {
+                            setState(() {
+                              for (var i = 0; i < contactList.length; i++) {
+                                contactList[i].isChecked = false;
+                                print("------${contactList[i].phonenumber}");
+                              }
+                              isVisible = true;
+                            });
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 20),
+                            child: Text(
+                              'Unselect all',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                        ),
+                  hintText: 'Type a Group Name',
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
+            ),
     );
   }
 }
@@ -174,16 +466,19 @@ class NewGroupContact extends StatefulWidget {
   final msgdte$tme;
   final ItmCnt;
   final onTap;
-  const NewGroupContact({
-    Key? key,
-    required this.profIcon,
-    required this.msgText,
-    required this.contactName,
-    required this.ntfctnCnt,
-    required this.msgdte$tme,
-    required this.ItmCnt,
-    required this.onTap,
-  }) : super(key: key);
+  final controller;
+
+  NewGroupContact(
+      {Key? key,
+      required this.profIcon,
+      required this.msgText,
+      required this.contactName,
+      required this.ntfctnCnt,
+      required this.msgdte$tme,
+      required this.ItmCnt,
+      required this.onTap,
+      required this.controller})
+      : super(key: key);
 
   @override
   State<NewGroupContact> createState() => _NewGroupContactState();
@@ -195,6 +490,10 @@ class _NewGroupContactState extends State<NewGroupContact> {
   bool checkedValue = false;
   String searchString = "";
 
+  var username;
+  var mobile;
+  TextEditingController groupcontoller = TextEditingController();
+
   @override
   void initState() {
     setState(() {
@@ -203,45 +502,10 @@ class _NewGroupContactState extends State<NewGroupContact> {
     });
   }
 
-  create_group() async {
-    Response response = await post(Uri.parse(Create_Group), body: {
-      "groupcreated": "Sijin created group",
-      "groupimage": "default",
-      "groupkey": "e6d81658234569466bf217812cdbd2acc6e05",
-      "groupname": "Mohamed Fazil Flutter",
-      "groupstatus": "A",
-      "opengroup": false,
-      "owner": "8903725995",
-      "status": "1",
-      "timestamp": 1658234569466,
-      "uid": "8903725995"
-    }, headers: {
-      "Content-type": "application/x-www-form-urlencoded",
-      "Accept": "application/json",
-      "charset": "utf-8"
-    });
-    // responseStatusCode = response.statusCode;
-    print(response.body);
-    var Data = jsonDecode(response.body);
-    // var Data = d1;
-    print(Data);
-    print(Data.length);
-  }
-
   Data() async {
-    Map data = {"compid": "1"};
-    print(data);
-    String body = json.encode(data);
-    print(body);
-
     var response = await http.post(
       Uri.parse(Contacts_Api),
-      body: body,
-      headers: {
-        "Content-Type": "application/json",
-        "accept": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+      body: {"compid": "1"},
     );
     // print("length:${(response.body).length}");
     //  print("result:${response.body}");
@@ -249,15 +513,15 @@ class _NewGroupContactState extends State<NewGroupContact> {
     Contactmodel.add((jsonDecode(response.body)));
 
     // print("length:${jsonDecode(response.body).length}");
-    listItems.clear();
+    contactList.clear();
     for (var i = 0; i < jsonDecode(response.body).length; i++) {
-      listItems.add(Employee(
-        id: i + 1,
-        Name: jsonDecode(response.body)[i]['username'] ?? "",
-        jobProfile: jsonDecode(response.body)[i]['designation'] ?? "",
-        photourl: jsonDecode(response.body)[i]["photourl"] ?? "",
-        isChecked: false,
-      ));
+      contactList.add(Employee(
+          id: i + 1,
+          Name: jsonDecode(response.body)[i]['username'] ?? "",
+          jobProfile: jsonDecode(response.body)[i]['designation'] ?? "",
+          photourl: jsonDecode(response.body)[i]["photourl"] ?? "",
+          isChecked: false,
+          phonenumber: jsonDecode(response.body)[i]['mobile']));
     }
 
     setState(() {});
@@ -272,10 +536,14 @@ class _NewGroupContactState extends State<NewGroupContact> {
           child: Card(
             elevation: 5,
             child: TextFormField(
+                controller: groupcontoller,
                 onChanged: (value) {
-                  setState(() {
-                    searchString = value.toLowerCase();
-                  });
+                  if (mounted) {
+                    setState() => searchString = value.toLowerCase();
+                  }
+                  if (mounted) {
+                    setState() => searchString = value.toLowerCase();
+                  }
                 },
                 decoration: const InputDecoration(
                     border: InputBorder.none,
@@ -286,11 +554,11 @@ class _NewGroupContactState extends State<NewGroupContact> {
         ),
         Expanded(
           child: ListView.separated(
-              itemCount: listItems.length,
+              itemCount: contactList.length,
               itemBuilder: (BuildContext context, int index) {
-                final employee = listItems[index];
+                final employee = contactList[index];
 
-                return listItems[index]
+                return contactList[index]
                         .Name
                         .toString()
                         .toLowerCase()
@@ -298,17 +566,46 @@ class _NewGroupContactState extends State<NewGroupContact> {
                     ? CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.trailing,
                         value: employee.isChecked,
-                        onChanged: (newValue) {
+                        //         value:contactList[index].isChecked,
+                        //           onChanged: (val) {
+                        // contactList[index].isChecked = val!;
+                        // setState(() {});
+                        // },
+                        onChanged: (val) {
                           setState(() {
-                            employee.isChecked = newValue!;
+                            print('------check--------${employee.isChecked}');
+                            employee.isChecked = !employee.isChecked;
+                            print('------check--------${employee.isChecked}');
+                            if (employee.isChecked == true) {
+                              for (var i = 0; i < contactList.length; i++) {
+                                if (contactList[i].phonenumber ==
+                                    employee.phonenumber) {
+                                  var object = {};
+                                  object['name'] = employee.Name;
+                                  object['number'] = employee.phonenumber;
+                                  testArray.add(object);
+
+                                  print('sdsdsd${object['number']}');
+                                  print("******testarray*****${testArray}");
+                                }
+                              }
+                            } else {
+                              var object = {};
+                              object['name'] = employee.Name;
+                              object['number'] = employee.phonenumber;
+                              testArray.removeWhere((item) =>
+                                  item['number'] == object['number'] &&
+                                  item['name'] == object['name']);
+                              print('ttatata$testArray');
+                            }
                           });
                         },
-                        title: Text(listItems[index].Name),
+                        title: Text(contactList[index].Name),
                         secondary: CircleAvatar(
                           child: ClipOval(
                             child: CachedNetworkImage(
                               fit: BoxFit.cover,
-                              imageUrl: listItems[index].photourl ?? "",
+                              imageUrl: contactList[index].photourl ?? "",
                               progressIndicatorBuilder:
                                   (context, url, downloadProgress) =>
                                       CircularProgressIndicator(
@@ -320,18 +617,18 @@ class _NewGroupContactState extends State<NewGroupContact> {
                             ),
                           ),
                         ),
-                        subtitle: Text(listItems[index].jobProfile),
+                        subtitle: Text(contactList[index].jobProfile),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 0),
                       )
                     : Container();
               },
               separatorBuilder: (BuildContext context, int index) {
-                return listItems[index]
+                return contactList[index]
                         .toString()
                         .toLowerCase()
                         .contains(searchString)
-                    ? const Divider()
+                    ? Divider()
                     : Container();
               }),
         ),

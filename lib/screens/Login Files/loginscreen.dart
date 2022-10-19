@@ -123,7 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         AlertDialouge();
       }
-    } catch (e) {
+    } 
+    catch (e) {
       print(e.toString());
     }
     return;
