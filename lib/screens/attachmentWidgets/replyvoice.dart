@@ -29,6 +29,9 @@ class _ReplyVoiceCardState extends State<ReplyVoiceCard> {
   @override
   void initState() {
     super.initState();
+  }
+
+  initialize() {
     myPlayer.openPlayer();
     // flutterSoundHelper.
 
@@ -82,7 +85,7 @@ class _ReplyVoiceCardState extends State<ReplyVoiceCard> {
                 width: MediaQuery.of(context).size.width / 2,
                 // height: 70,
                 decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Colors.green,
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: [
                       BoxShadow(
@@ -101,13 +104,18 @@ class _ReplyVoiceCardState extends State<ReplyVoiceCard> {
                           Expanded(
                             child: LinearProgressIndicator(
                               color: Colors.white,
+                              // backgroundColor: Colors.white,
                               value: _progress,
                             ),
                           ),
                           (player?.playing ?? false)
                               ? IconButton(
                                   onPressed: () {
-                                    player?.pause();
+                                    setState(() {
+                                      player?.pause();
+                                      print(
+                                          "--------falsee----========$player====");
+                                    });
                                   },
                                   icon: const Icon(
                                     Icons.pause,
@@ -116,10 +124,10 @@ class _ReplyVoiceCardState extends State<ReplyVoiceCard> {
                                   ))
                               : IconButton(
                                   onPressed: () {
-                                    
-                                    print("------------PLAYER============");
+                                    initialize();
 
                                     player?.play();
+                                    ProcessingState.ready;
                                   },
                                   icon: const Icon(
                                     Icons.play_arrow,

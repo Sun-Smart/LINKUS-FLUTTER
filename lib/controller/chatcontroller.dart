@@ -37,7 +37,9 @@ class Message {
         Docs: json["Docs"],
         fileType: json["fileType"],
         replyerName: json["replyerName"]);
+        
   }
+ 
 }
 
 class GroupMsgController extends GetxController {
@@ -75,4 +77,7 @@ class GroupMsg {
         replyerName: json["replyerName"]);
   }
 }
+
+
 //git commit checking
+

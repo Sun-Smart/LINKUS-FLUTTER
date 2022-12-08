@@ -5,19 +5,22 @@ import 'package:flutter/material.dart';
 import '../mainmenu/calendar/date_time.dart';
 
 class SearchFilter extends StatefulWidget {
-  const SearchFilter({super.key});
+  dynamic onChanged;
+  dynamic onsave;
+  SearchFilter({super.key});
 
   @override
   State<SearchFilter> createState() => _SearchFilterState();
 }
 
 class _SearchFilterState extends State<SearchFilter> {
+    DateTime? _selectedDate;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Search Media'),
+          title: const Text('Search Filter'),
         ),
         body: Container(
           child: Column(
@@ -39,8 +42,16 @@ class _SearchFilterState extends State<SearchFilter> {
                         ),
                         hintText: "",
                         icon: Icons.arrow_drop_down,
-                        firstDate: DateTime.now(),
+                        firstDate: DateTime(1950),
                         LastDate: DateTime.now()),
+                        
+                    //                 onChanged: (value) {
+                    //   if (value.isNotEmpty) {
+                    //     setState(() {
+                    //       _selectedDate = value as DateTime;
+                    //     });
+                    //   }
+                    // },
                   ),
                   const SizedBox(
                     width: 10,
@@ -57,7 +68,7 @@ class _SearchFilterState extends State<SearchFilter> {
                         ),
                         hintText: "",
                         icon: Icons.arrow_drop_down,
-                        firstDate: DateTime.now(),
+                        firstDate: DateTime(1950),
                         LastDate: DateTime.now()),
                   ),
                 ]),
@@ -92,7 +103,9 @@ class _SearchFilterState extends State<SearchFilter> {
         ),
         bottomSheet: InkWell(
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(
+                context,
+              );
             },
             child: Container(
               height: MediaQuery.of(context).size.height * 0.06,

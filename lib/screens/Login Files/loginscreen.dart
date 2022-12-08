@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, non_constant_identifier_names, use_build_context_synchronously
+// ignore_for_file: avoid_print, non_constant_identifier_names, use_build_context_synchronously// ignore_for_file: avoid_print, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
 
@@ -25,6 +25,7 @@ var profilepic;
 var compid;
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool login = false;
   final nameController = TextEditingController();
   final passwordController = TextEditingController();
   final forgotpswrdController = TextEditingController();
@@ -57,10 +58,24 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.remove('pwd');
       await prefs.remove('phoneNumber');
       await prefs.clear();
-      // nameController.clear();
-      //passwordController.clear();
+
       print("paswrdfalse----${prefs.getString('pwd')}");
     }
+  }
+
+  Future<void> updateStatus(
+      String loginnumber, status, last_changed, deviceid) async {
+    print("ssssssssssssssssssssssssss");
+    var data = {
+      "mobile": loginnumber.toString(),
+      "status": status ?? "",
+      "last_changed": last_changed.toString(),
+      "deviceid": deviceid ?? ""
+    };
+
+    Response response = await post(Uri.parse(Statusupdate), body: data);
+    var res = response.body;
+    print("somethinng-----------------$res");
   }
 
   Future<void> login_Func(String mobile, password, bool isChecked) async {
@@ -118,13 +133,14 @@ class _LoginScreenState extends State<LoginScreen> {
             const SnackBar(content: Text('Logged In Successfully')));
 
         print('Login successfully');
+        updateStatus(
+            mobileNumber, "online", DateTime.now().millisecondsSinceEpoch, "0");
       } else {
         print("Task Failed");
 
         AlertDialouge();
       }
-    } 
-    catch (e) {
+    } catch (e) {
       print(e.toString());
     }
     return;
@@ -155,7 +171,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  bool login = false;
   @override
   void initState() {
     super.initState();
@@ -171,10 +186,10 @@ class _LoginScreenState extends State<LoginScreen> {
   set() async {
     final prefs = await SharedPreferences.getInstance();
 
-    print("xyzzzz:${prefs.getString('phoneNumber')!}");
-    nameController.text = prefs.getString('phoneNumber')!;
-    passwordController.text = prefs.getString('pwd')!;
-    isChecked = prefs.getBool('remember_me')!;
+    print("xyzzzz:${prefs.getString('phoneNumber')}");
+    nameController.text = prefs.getString('phoneNumber') ?? "";
+    passwordController.text = prefs.getString('pwd') ?? "";
+    isChecked = prefs.getBool('remember_me') ?? false;
     print("name-----${nameController.text}");
     print("name-----${passwordController.text}");
   }
@@ -277,34 +292,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     )));
           });
     }
-
-    // if (xyz["data"].isNotEmpty) {
-    //   showDialog<String>(
-    //       context: context,
-    //       builder: (BuildContext context) {
-    //         return WillPopScope(
-    //             onWillPop: () async => false,
-    //             child: AlertDialog(
-    //                 title: const Text(
-    //                   'Reset link sent Successfully',
-    //                   style: TextStyle(
-    //                       color: Colors.black26,
-    //                       fontWeight: FontWeight.w400,
-    //                       fontSize: 16),
-    //                 ),
-    //                 content: TextButton(
-    //                   child: Text(
-    //                     "OK",
-    //                     style: TextStyle(fontSize: 15, color: Colors.black),
-    //                   ),
-    //                   onPressed: () {
-    //                     Navigator.pop(context);
-    //                   },
-    //                 )));
-    //       });
-    // } else {
-
-    // }
 
     setState(() {});
   }

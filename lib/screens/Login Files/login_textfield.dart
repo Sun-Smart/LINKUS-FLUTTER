@@ -47,6 +47,7 @@ class _MasterTextFieldState extends State<MasterTextField> {
             child: SizedBox(
               height: MediaQuery.of(context).size.height / 18,
               child: TextFormField(
+                textCapitalization: TextCapitalization.sentences,
                 autofocus: false,
                 obscureText: widget.obscureText,
                 controller: widget.Controller,

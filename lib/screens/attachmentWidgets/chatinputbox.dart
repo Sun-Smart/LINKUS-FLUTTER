@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,9 +19,11 @@ class ChatInputBox extends StatefulWidget {
   Function onsent;
   Function DocumentSnd;
   Function onLocation;
+  String buddyname;
 
   ChatInputBox(
       {super.key,
+      required this.buddyname,
       required this.controller,
       this.onTap,
       required this.onsent,
@@ -38,6 +41,7 @@ class _ChatInputBoxState extends State<ChatInputBox> {
   bool emojiVisibility = true;
   bool isKeyboardVisible = false;
   FlutterSoundRecorder myRecorder = FlutterSoundRecorder();
+
   FlutterSoundPlayer myPlayer = FlutterSoundPlayer();
 
   bool isRecording = false;
@@ -70,10 +74,10 @@ class _ChatInputBoxState extends State<ChatInputBox> {
 
   _onEmojiSelected(Emoji emoji) {
     setState(() {
-      chatController
+      widget.controller
         ..text += emoji.emoji
         ..selection = TextSelection.fromPosition(
-            TextPosition(offset: chatController.text.length));
+            TextPosition(offset: widget.controller.text.length));
     });
   }
 
@@ -122,185 +126,206 @@ class _ChatInputBoxState extends State<ChatInputBox> {
             color: const Color.fromRGBO(1, 123, 255, 1),
             child: Padding(
               padding: const EdgeInsets.all(9),
-              child: Row(
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: isRecording
-                        ? Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: TextFormField(
-                              cursorHeight: 16,
-                              enabled: false,
-                              maxLines: 10,
-                              minLines: 1,
-                              keyboardType: TextInputType.multiline,
-                              // autovalidateMode: AutovalidateMode.always,
-                              cursorColor: Colors.grey.shade900,
-                              // onTap: onTap(),
-                              // onTap: onTap(),
+              child: WillPopScope(
+                child: Row(
+                  children: [
+                    Flexible(
+                      flex: 1,
+                      child: isRecording
+                          ? Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: TextFormField(
+                                controller: widget.controller,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
 
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 18, horizontal: 16),
-                                  hintText: 'Recording... $_duration',
-                                  prefixIcon: const Icon(
-                                    Icons.mic,
-                                    color: Colors.red,
-                                  )),
-                            ))
-                        : Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: TextFormField(
-                              cursorHeight: 16,
-                              controller: chatController,
-                              onTap: onTap(MicIcon),
+                                // controller: _scrollController,
+                                cursorHeight: 16,
+                                enabled: false,
+                                maxLines: 10,
+                                minLines: 1,
+                                keyboardType: TextInputType.multiline,
+                                // autovalidateMode: AutovalidateMode.always,
+                                cursorColor: Colors.grey.shade900,
+                                // onTap: onTap(),
+                                // onTap: onTap(),
 
-                              onChanged: onChanged,
-                              maxLines: 10,
-                              minLines: 1,
-                              keyboardType: TextInputType.multiline,
-                              // autovalidateMode: AutovalidateMode.always,
-                              cursorColor: Colors.grey.shade900,
-                              // onTap: onTap(),
-                              // onTap: onTap(),
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 18, horizontal: 16),
+                                    hintText: 'Recording... $_duration',
+                                    prefixIcon: const Icon(
+                                      Icons.mic,
+                                      color: Colors.red,
+                                    )),
+                              ))
+                          : Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20)),
+                              child: TextFormField(
+                                textCapitalization:
+                                    TextCapitalization.sentences,
 
-                              decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 18,
-                                  ),
-                                  hintText: 'Type a message',
-                                  prefixIcon: Material(
-                                      color: Colors.transparent,
-                                      child: IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              emojiVisibility = false;
-                                              // MicIcon = false;
-                                              emojiShowing = !emojiShowing;
+                                cursorHeight: 16,
+                                controller: widget.controller,
+                                onTap: onTap(MicIcon),
 
-                                              FocusManager.instance.primaryFocus
-                                                  ?.unfocus();
-                                            });
-                                          },
-                                          icon: const Image(
-                                              image: AssetImage(
-                                                  'assets/images/smiley.png')))),
+                                onChanged: onChanged,
+                                maxLines: 10,
+                                minLines: 1,
+                                keyboardType: TextInputType.multiline,
+                                // autovalidateMode: AutovalidateMode.always,
+                                cursorColor: Colors.grey.shade900,
+                                // onTap: onTap(),
+                                // onTap: onTap(),
 
-                                  // :Icon(Icons.send)
-
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      showModalBottomSheet<void>(
-                                        backgroundColor: Colors.transparent,
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return attatchmentContents(
-                                            Ontap: widget.onTap,
-                                            onsentimage: widget.onsent,
-                                            OnDocSend: widget.DocumentSnd,
-                                            onLocation: widget.onLocation,
-                                          );
-                                        },
-                                      );
-                                    },
-
-                                    icon: const Image(
-                                      image: AssetImage(
-                                          'assets/images/attachments.png'),
-                                      height: 50,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 18,
                                     ),
-                                    // iconSize: 25,
-                                  )),
-                            )),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: MicIcon
-                          ? GestureDetector(
-                              onLongPress: () async {
-                                Directory p = await getTemporaryDirectory();
-                                await Permission.microphone.request();
-                                setState(
-                                  () {
-                                    isRecording = true;
-                                  },
-                                );
+                                    hintText: 'Type a message',
+                                    prefixIcon: Material(
+                                        color: Colors.transparent,
+                                        child: IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                emojiVisibility = false;
+                                                // MicIcon = false;
+                                                emojiShowing = !emojiShowing;
+                                                FocusScope.of(context)
+                                                    .requestFocus(FocusNode());
+                                              });
+                                            },
+                                            icon: const Image(
+                                                image: AssetImage(
+                                                    'assets/images/smiley.png')))),
 
-                                myRecorder.startRecorder(
-                                    codec: Codec.defaultCodec,
-                                    toFile:
-                                        "${p.path}/${DateTime.now().millisecondsSinceEpoch}.mp4");
+                                    // :Icon(Icons.send)
 
-                                print("++++++++++++++++++++++++++");
-                                myRecorder.setSubscriptionDuration(
-                                    const Duration(milliseconds: 300));
-                                myRecorder.onProgress
-                                    ?.listen((RecordingDisposition event) {
-                                  print(event.duration);
+                                    suffixIcon: IconButton(
+                                      onPressed: () {
+                                        showModalBottomSheet<void>(
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return attatchmentContents(
+                                              buddyname: widget.buddyname,
+                                              Ontap: widget.onTap,
+                                              onsentimage: widget.onsent,
+                                              OnDocSend: widget.DocumentSnd,
+                                              onLocation: widget.onLocation,
+                                            );
+                                          },
+                                        );
+                                      },
+
+                                      icon: const Image(
+                                        image: AssetImage(
+                                            'assets/images/attachments.png'),
+                                        height: 50,
+                                      ),
+                                      // iconSize: 25,
+                                    )),
+                              )),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: MicIcon
+                            ? GestureDetector(
+                                onLongPress: () async {
+                                  await Permission.microphone.request();
+                                  Directory p = await getTemporaryDirectory();
 
                                   setState(
                                     () {
-                                      _duration =
-                                          "${event.duration.inMinutes.remainder(60)}.${event.duration.inSeconds.remainder(60).toString().padLeft(2, '0')}";
+                                      isRecording = true;
                                     },
                                   );
-                                });
-                              },
-                              onLongPressUp: () {
-                                print(
-                                    "Tyring to stop ${myRecorder.isRecording}");
-                                setState(
-                                  () {
-                                    isRecording = false;
-                                  },
-                                );
-                                if (myRecorder.isRecording) {
-                                  myRecorder.stopRecorder().then((abc) {
-                                    print("--------$abc");
-                                    print("!!!!!!!!!!!!!!!!-----$_duration");
-                                    if (double.parse(_duration) > 0.01) {
-                                      print("-------good------");
-                                      widget.DocumentSnd(
-                                        abc,
-                                        '${DateTime.now().millisecondsSinceEpoch}.mp4',
-                                      );
-                                    } else {
-                                      print(
-                                          "++++++++++Duration is invalid+++++++++++");
-                                    }
+
+                                  myRecorder.startRecorder(
+                                      codec: Codec.defaultCodec,
+                                      toFile:
+                                          "${p.path}/${DateTime.now().millisecondsSinceEpoch}.mp4");
+
+                                  print("+++++++++++++++++++++++++++++");
+                                  myRecorder.setSubscriptionDuration(
+                                      const Duration(milliseconds: 300));
+                                  myRecorder.onProgress
+                                      ?.listen((RecordingDisposition event) {
+                                    print(event.duration);
+
+                                    setState(
+                                      () {
+                                        _duration =
+                                            "${event.duration.inMinutes.remainder(60)}.${event.duration.inSeconds.remainder(60).toString().padLeft(2, '0')}";
+                                      },
+                                    );
                                   });
-                                }
-                              },
-                              child: const Image(
-                                image: AssetImage('assets/images/mic.png'),
-                              ))
-                          : Padding(
-                              padding: const EdgeInsets.only(left: 3),
-                              child: IconButton(
-                                onPressed: widget.onTap,
-                                icon: const Icon(
-                                  Icons.send,
-                                  color: Color.fromRGBO(1, 123, 255, 1),
-                                  size: 20,
-                                ),
-                              ))),
-                ],
+                                },
+                                onLongPressUp: () {
+                                  print(
+                                      "Tyring to stop ${myRecorder.isRecording}");
+                                  setState(
+                                    () {
+                                      isRecording = false;
+                                    },
+                                  );
+                                  if (myRecorder.isRecording) {
+                                    myRecorder.stopRecorder().then((abc) {
+                                      print("--------$abc");
+                                      print("!!!!!!!!!!!!!!!!-----$_duration");
+                                      if (double.parse(_duration) > 0.01) {
+                                        print("-------good------");
+                                        widget.DocumentSnd(
+                                          abc,
+                                          '${DateTime.now().millisecondsSinceEpoch}.mp4',
+                                        );
+                                      } else {
+                                        print(
+                                            "++++++++++Duration is invalid+++++++++++");
+                                      }
+                                    });
+                                  }
+                                },
+                                child: const Image(
+                                  image: AssetImage('assets/images/mic.png'),
+                                ))
+                            : Padding(
+                                padding: const EdgeInsets.only(left: 3),
+                                child: IconButton(
+                                  onPressed: widget.onTap,
+                                  icon: const Icon(
+                                    Icons.send,
+                                    color: Color.fromRGBO(1, 123, 255, 1),
+                                    size: 20,
+                                  ),
+                                ))),
+                  ],
+                ),
+                onWillPop: () {
+                  if (emojiShowing) {
+                    setState(() {
+                      emojiShowing = false;
+                    });
+                  } else {
+                    Navigator.pop(context);
+                  }
+                  return Future.value(false);
+                },
               ),
             ),
           ),
@@ -309,7 +334,8 @@ class _ChatInputBoxState extends State<ChatInputBox> {
             child: SizedBox(
               height: 250.0,
               child: EmojiPicker(
-                  onEmojiSelected: (Category ?category, Emoji emoji) {
+                  textEditingController: widget.controller,
+                  onEmojiSelected: (Category? category, Emoji emoji) {
                     _onEmojiSelected(emoji);
                   },
                   onBackspacePressed: _onBackspacePressed,
@@ -324,7 +350,7 @@ class _ChatInputBoxState extends State<ChatInputBox> {
                       indicatorColor: Colors.blue,
                       iconColor: Colors.grey,
                       iconColorSelected: Colors.blue,
-                     // progressIndicatorColor: Colors.blue,
+                      // progressIndicatorColor: Colors.blue,
                       backspaceColor: Colors.blue,
                       skinToneDialogBgColor: Colors.white,
                       skinToneIndicatorColor: Colors.grey,
@@ -345,5 +371,6 @@ class _ChatInputBoxState extends State<ChatInputBox> {
         ],
       ),
     );
+ 
   }
 }

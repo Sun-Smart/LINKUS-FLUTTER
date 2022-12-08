@@ -24,7 +24,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void initState() {
-    _cameraController = CameraController(cameras?[0], ResolutionPreset.high);
+    _cameraController = CameraController(cameras![1], ResolutionPreset.high);
 
     cameraValue = _cameraController.initialize();
     super.initState();
@@ -52,7 +52,7 @@ class _CameraScreenState extends State<CameraScreen> {
                     FrontCam = !FrontCam;
                     int CameraPos = FrontCam ? 0 : 1;
                     _cameraController = CameraController(
-                        cameras?[CameraPos], ResolutionPreset.high);
+                        cameras![CameraPos], ResolutionPreset.high);
                     cameraValue = _cameraController.initialize();
                   });
                 },
@@ -112,6 +112,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void takeSnap(BuildContext context) async {
     final path = join((await getTemporaryDirectory()).path,
         "${DateTime.now().millisecondsSinceEpoch}.jpg");
+    //await _cameraController.takePicture(path);
     await _cameraController.takePicture(path);
     Navigator.push(
         context,

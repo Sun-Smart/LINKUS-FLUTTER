@@ -5,7 +5,10 @@ import 'widgets.dart';
 
 class recentTab extends StatefulWidget {
   final name;
-  const recentTab({super.key, this.name});
+
+
+  
+   recentTab({super.key, this.name,});
 
   @override
   State<recentTab> createState() => _recentTabState();
@@ -16,6 +19,7 @@ class _recentTabState extends State<recentTab> {
   Widget build(BuildContext context) {
     // int index = 0;
     return ChatList(
+    
       name: widget.name,
       onTap: () {},
       ntfctnCnt: CircleAvatar(

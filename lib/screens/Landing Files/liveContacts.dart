@@ -73,8 +73,13 @@ class _liveContactsState extends State<liveContacts> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => PersonalChat(
+                                   
+                                    callback: (){},
+
                                         names: liveItems[index].Name,
                                         images: liveItems[index].photourl,
+                                        status: liveItems[index].status, 
+                                        
                                       )));
                         },
                         leading: CircleAvatar(

@@ -326,7 +326,7 @@ class _contactsTabState extends State<contactsTab> {
           children: [
             Tab(
               icon: allContacts(
-                  mobileNumber: widget.mobileNumber, buddyId: buddyId),
+                  mobileNumber: widget.mobileNumber, buddyId: buddyId,),
             ),
             const Tab(icon: liveContacts()),
           ],

@@ -2,6 +2,8 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import 'package:http/http.dart';
 import 'package:linkus/screens/mainmenu/Customization/custom_page.dart';
 import 'package:linkus/screens/Landing%20Files/widgets.dart';
 import 'package:linkus/screens/Login%20Files/loginscreen.dart';
@@ -12,6 +14,7 @@ import 'package:linkus/screens/mainmenu/shelf/shelf.dart';
 import 'package:linkus/screens/mainmenu/starredscreen/starred.dart';
 import 'package:linkus/screens/mainmenu/task/mytask.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../variables/Api_Control.dart';
 import '../birthday/birthday_page.dart';
 import '../change Password/change_password.dart';
 import '../profile/my_profile.dart';
@@ -60,6 +63,21 @@ class _landingPageState extends State<landingPage> {
     // WidgetsBinding.instance.addPostFrameCallback((_) => apiData());
 
     super.initState();
+  }
+
+  updateStatus(
+      String loginnumber, status, last_changed, deviceid) async {
+    print("ssssssssssssssssssssssssss");
+    var data = {
+      "mobile": loginnumber.toString(),
+      "status": status ?? "",
+      "last_changed": last_changed.toString(),
+      "deviceid": deviceid ?? ""
+    };
+
+    Response response = await post(Uri.parse(Statusupdate), body: data);
+    var res = response.body;
+    print("somethinng-----------------$res");
   }
 
   @override
@@ -129,7 +147,7 @@ class _landingPageState extends State<landingPage> {
                             children: [
                               username != null
                                   ? Text(
-                                      username,
+                                      username??"".toString(),
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.normal),
@@ -479,6 +497,8 @@ class _landingPageState extends State<landingPage> {
                                                   ),
                                                   height: 0,
                                                   onTap: () {
+                                                    
+
                                                     Navigator.pop(context);
 
                                                     showDialog<String>(
@@ -502,20 +522,6 @@ class _landingPageState extends State<landingPage> {
                                                                         15),
                                                               ),
                                                               actions: <Widget>[
-                                                                // ElevatedButton(
-                                                                //   style: ElevatedButton.styleFrom(
-                                                                //       // backgroundColor:
-                                                                //           // Colors.grey,
-                                                                //       shape: RoundedRectangleBorder(
-                                                                //           borderRadius:
-                                                                //               BorderRadius.circular(
-                                                                //                   12))),
-                                                                //   onPressed: () {
-                                                                //
-                                                                //   },
-                                                                //   child: const Text(yfyfyifiyf
-                                                                //       'CANCEL'),dfghjbknm
-                                                                // ),
                                                                 InkWell(
                                                                   onTap: () {
                                                                     Navigator.pop(
@@ -549,6 +555,14 @@ class _landingPageState extends State<landingPage> {
                                                                 ),
                                                                 InkWell(
                                                                   onTap: () {
+                                                                    setState(() {
+                                                      updateStatus(
+                                                          mobileNumber,
+                                                          "offline",
+                                                          DateTime.now()
+                                                              .millisecondsSinceEpoch,
+                                                          "0");
+                                                    });
                                                                     Navigator
                                                                         .pushAndRemoveUntil<
                                                                             dynamic>(
@@ -623,7 +637,8 @@ class _landingPageState extends State<landingPage> {
                           ])),
                       body: TabBarView(
                         children: [
-                          Tab(icon: recentTab(name: username.toString())),
+                          Tab(icon: recentTab(name: username.toString(),
+                         ),),
                           Tab(
                               icon: contactsTab(
                                   mobileNumber: mobileNumber.toString())),

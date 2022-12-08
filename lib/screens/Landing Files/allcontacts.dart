@@ -9,10 +9,12 @@ import 'widgets.dart';
 class allContacts extends StatefulWidget {
   final buddyId;
   final mobileNumber;
-  const allContacts({
+  
+   allContacts({
     super.key,
     this.buddyId,
     this.mobileNumber,
+    
   });
 
   @override
@@ -28,11 +30,12 @@ class _allContactsState extends State<allContacts> {
       mobileNumber: widget.mobileNumber,
       profIcon: Icon(Icons.person),
       msgText: null,
+      
       msgdte$tme: Text(''),
       ntfctnCnt: Container(
         height: 10,
         width: 10,
-        decoration: BoxDecoration(
+        decoration:BoxDecoration(
             borderRadius: BorderRadius.circular(5), color: Colors.red),
       ),
       contactName: Text(

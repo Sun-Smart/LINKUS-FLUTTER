@@ -104,7 +104,6 @@ class _groupChatState extends State<groupChat> {
   @override
   void initState() {
     _groupmemblist();
-   
 
     LoadChatHistory();
 
@@ -159,7 +158,7 @@ class _groupChatState extends State<groupChat> {
       "Accept": "application/json",
       "charset": "utf-8"
     });
-    
+
     var jsonData = await jsonDecode(response.body);
     print("____________________________${jsonData.length}");
 
@@ -580,8 +579,7 @@ class _groupChatState extends State<groupChat> {
     });
     groupmemblist = json.decode(response.body);
     print("----------ABI------------${response.body}");
- groupmemblist.removeWhere((item) =>
-                                  item['status'] == '0' );
+    groupmemblist.removeWhere((item) => item['status'] == '0');
     memberlength = groupmemblist.length;
     setState(() {});
   }
@@ -603,7 +601,7 @@ class _groupChatState extends State<groupChat> {
 
   var GroupKey = [];
   var GroupName_Length;
-  var Data=[];
+  var Data = [];
   bool exitGroupButton = false;
 
   LoadGroupData() async {
@@ -624,22 +622,17 @@ class _groupChatState extends State<groupChat> {
     });
 
     print(response.body);
-     Data =  jsonDecode(response.body);
-     Data.clear();
-     GroupImages.clear();
+    Data = jsonDecode(response.body);
+    Data.clear();
+    GroupImages.clear();
     GroupNames.clear();
     GroupImages.clear();
     GroupKey.clear();
     GroupCreated.clear();
-   
-    
-
-  
-   
 
     if (Data != null || Data != []) {
       // for (var i = Data.length - 1; i >= 0; i--) {
-       for(var i =0; i< Data.length; i++) {
+      for (var i = 0; i < Data.length; i++) {
         GroupNames.add(Data[i]['groupname']);
         GroupImages.add(Data[i]['groupimage']);
         GroupKey.add(Data[i]['groupkey']);
@@ -667,7 +660,6 @@ class _groupChatState extends State<groupChat> {
 //     mobile.clear();
 //     role.clear();
 //     owner.clear();
-   
 
 //     groupmemblist = json.decode(response.body);
 
@@ -689,14 +681,12 @@ class _groupChatState extends State<groupChat> {
 //            print("77777777777777"),
 //         show_delete_icon=false,
 //        },
-//     print("!111111111111222222222$owner"),     
+//     print("!111111111111222222222$owner"),
 //         });
-        
 
 //     setState(() {});
 //   }
 
- 
   grpmember() async {
     final prefs = await SharedPreferences.getInstance();
     Loginuser = prefs.getString('mobileNumber');
@@ -705,18 +695,17 @@ class _groupChatState extends State<groupChat> {
     http.Response response = await http.post(Uri.parse(GroupMember), body: {
       "groupkey": widget.GroupKey.toString(),
     });
-   
+
     groupmemberlist.clear();
-   name.clear();
+    name.clear();
     role.clear();
     photo.clear();
     mobile.clear();
     owner.clear();
- 
+
     groupmemberlist = json.decode(response.body);
-   groupmemblist.removeWhere((item) =>
-                                  item['status'] == '0' );
-   
+    groupmemblist.removeWhere((item) => item['status'] == '0');
+
     print("555555555551111111111${groupmemblist}");
 
     // for (var i = 0; i < groupmemberlist.length; i++) {
@@ -725,45 +714,44 @@ class _groupChatState extends State<groupChat> {
     //   role.add(groupmemberlist[i]["designation"]);
     //   mobile.add(groupmemberlist[i]["uid"].toString());
     //   owner.add(groupmemberlist[i]["owner"].toString());
-     groupmemblist.forEach((user) => {
-           if(user['status'].toString() == '1') {
-          name.add(user['username'].toString()),
-          photo.add(user["photourl"].toString()),
-          role.add(user["designation"]),
-          mobile.add(user["uid"].toString()),
-           owner.add(user["owner"].toString()),
-         
-      print('---------------NAME--------${name}'),
-    
-         print("555555555551111111111${user["status"]}"),
-         setState(() {}),
-  for(var i =0;i<owner.length;i++){
-      print("=======${owner[i]},${Loginuser}"),
-      if(owner[i] == Loginuser) {
-        show_delete_icon = true,
-      }
-    },
-
-    for(var i =0;i<mobile.length;i++){
-      print("=======${mobile[i]},${Loginuser}"),
-      if(mobile[i] == Loginuser) {
-        exitGroupButton = true,
-      }
-    },
-  print("-------abi----------${mobile}")
-   } 
-   
-   },
-    
-   );
-  
+    groupmemblist.forEach(
+      (user) => {
+        if (user['status'].toString() == '1')
+          {
+            name.add(user['username'].toString()),
+            photo.add(user["photourl"].toString()),
+            role.add(user["designation"]),
+            mobile.add(user["uid"].toString()),
+            owner.add(user["owner"].toString()),
+            print('---------------NAME--------${name}'),
+            print("555555555551111111111${user["status"]}"),
+            setState(() {}),
+            for (var i = 0; i < owner.length; i++)
+              {
+                print("=======${owner[i]},${Loginuser}"),
+                if (owner[i] == Loginuser)
+                  {
+                    show_delete_icon = true,
+                  }
+              },
+            for (var i = 0; i < mobile.length; i++)
+              {
+                print("=======${mobile[i]},${Loginuser}"),
+                if (mobile[i] == Loginuser)
+                  {
+                    exitGroupButton = true,
+                  }
+              },
+            print("-------abi----------${mobile}")
+          }
+      },
+    );
   }
-
 
   exit_group() async {
     var time = DateTime.now().millisecondsSinceEpoch;
     var timeStamp = ConvertingTimeStamp(time);
-      showDialog(
+    showDialog(
         context: context,
         builder: (bc) {
           return Dialog(
@@ -787,50 +775,46 @@ class _groupChatState extends State<groupChat> {
     http.Response response = await http.post(Uri.parse(exitGroup), body: data);
     print("--------Exit----${response.body}");
     if (response.statusCode == 200) {
-      
       Future.delayed(Duration(seconds: 1)).then((value) {
-         Navigator.pop(context);
-      Navigator.pop(context);
-     
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                content: Text(
-                  " You have Exit from ${widget.GroupNames} Group",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: InkWell(
-                      child: Text(
-                        "OK",
-                        style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400),
+        Navigator.pop(context);
+        Navigator.pop(context);
+
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                  content: Text(
+                    " You have Exit from ${widget.GroupNames} Group",
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: InkWell(
+                        child: Text(
+                          "OK",
+                          style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      onTap: () {
-                        Navigator.of(context).pop();
-                       
-                      
-                      },
-                    ),
-                  )
-                ]);
-          });
-          setState(() {
-            
-          });
-      
-      });};}
-    
-  
+                    )
+                  ]);
+            });
+        setState(() {});
+      });
+    }
+    ;
+  }
+
   delete_group() async {
     var time = DateTime.now().millisecondsSinceEpoch;
     var timeStamp = ConvertingTimeStamp(time);
-      showDialog(
+    showDialog(
         context: context,
         builder: (bc) {
           return Dialog(
@@ -855,57 +839,48 @@ class _groupChatState extends State<groupChat> {
         await http.post(Uri.parse(delete_groupchat), body: data);
     print("--------delete----${response.body}");
     if (response.statusCode == 200) {
-       http.Response response1 =
+      http.Response response1 =
           await http.post(Uri.parse(delete_Group), body: data);
       print("--------delete----${response1.body}");
-        Navigator.pop(context);
       Navigator.pop(context);
-        
-    
-    Future.delayed(Duration(seconds: 00)).then((value){
-       Navigator.pop(context);
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-                content: Text(
-                  " Successfully deleted ${widget.GroupNames}",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: InkWell(
-                      child: Text(
-                        "OK",
-                        style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      onTap: () {
+      Navigator.pop(context);
+
+      Future.delayed(Duration(seconds: 00)).then((value) {
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                  content: Text(
+                    " Successfully deleted ${widget.GroupNames}",
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: InkWell(
+                        child: Text(
+                          "OK",
+                          style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        onTap: () {
                           LoadGroupData();
-                         Navigator.pop(context);
-                       
-                       
-                      },
-                    ),
-                  )
-                ]);
-          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    )
+                  ]);
+            });
 
-      print("-----time-$time,${widget.GroupKey}");
-     
-       
-      
+        print("-----time-$time,${widget.GroupKey}");
 
-      setState(() {});
-  });}}
-     
-     
-
-    
-  
+        setState(() {});
+      });
+    }
+  }
 
   @override
   bool get wantKeepAlive => true;
@@ -948,7 +923,6 @@ class _groupChatState extends State<groupChat> {
                                     color: Colors.white,
                                   ),
                                   onTap: () {
-                                     
                                     Navigator.pop(context);
                                   },
                                 )
@@ -1020,7 +994,6 @@ class _groupChatState extends State<groupChat> {
                             style: TextStyle(fontSize: 18),
                           ),
                           onTap: () {
-                         
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -1033,138 +1006,148 @@ class _groupChatState extends State<groupChat> {
                           thickness: 1,
                           height: 4,
                         ),
-                    
-                
-                  exitGroupButton==true?  
-                  ListTile(
-                          leading: Icon(
-                            Icons.exit_to_app,
-                            size: 25,
-                            color: Colors.black,
-                          ),
-                          title: Text(
-                            'Exit Group',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                      content: Text(
-                                        "Do you want to exit from ${widget.GroupNames} group?",
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.black),
-                                      ),
-                                      actions: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Colors.grey),
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text("Cancel")),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              ElevatedButton(
-                                                  onPressed: () {
-                                                
-                                                    exit_group();
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Colors.grey),
-                                                  child: Text("OK")),
-                                            ],
-                                          ),
-                                        )
-                                      ]);
-                                });
-                          },
-                        ):Container(),
-                       
-                      exitGroupButton==true ?  Divider(
-                          thickness: 1,
-                          height: 4,
-                        ):Container(),
-                    show_delete_icon==true?    ListTile(
-                          //subtitle: Text(show_delete_icon.toString()),
-                          // ignore: unrelated_type_equality_checks
-                          leading: Icon(
+                        exitGroupButton == true
+                            ? ListTile(
+                                leading: Icon(
+                                  Icons.exit_to_app,
+                                  size: 25,
+                                  color: Colors.black,
+                                ),
+                                title: Text(
+                                  'Exit Group',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                            content: Text(
+                                              "Do you want to exit from ${widget.GroupNames} group?",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.black),
+                                            ),
+                                            actions: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .grey),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text("Cancel")),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          exit_group();
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .grey),
+                                                        child: Text("OK")),
+                                                  ],
+                                                ),
+                                              )
+                                            ]);
+                                      });
+                                },
+                              )
+                            : Container(),
+                        exitGroupButton == true
+                            ? Divider(
+                                thickness: 1,
+                                height: 4,
+                              )
+                            : Container(),
+                        show_delete_icon == true
+                            ? ListTile(
+                                //subtitle: Text(show_delete_icon.toString()),
+                                // ignore: unrelated_type_equality_checks
+                                leading: Icon(
                                   Icons.delete,
                                   size: 25,
                                   color: Colors.black,
                                 ),
-                             
-                          // ignore: unrelated_type_equality_checks
-                          title:  Text(
+
+                                // ignore: unrelated_type_equality_checks
+                                title: Text(
                                   'Delete group ',
                                   style: TextStyle(fontSize: 18),
                                 ),
-                              
-                          onTap: () {
-                            Navigator.pop(context);
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                      content: Text(
-                                        "Do you want to delete ${widget.GroupNames} group?",
-                                        style: TextStyle(
-                                            fontSize: 18, color: Colors.black),
-                                      ),
-                                      actions: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Colors.grey),
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text("Cancel")),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              ElevatedButton(
-                                                  onPressed: () {
-                                                    delete_group();
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Colors.grey),
-                                                  child: Text("OK")),
-                                            ],
-                                          ),
-                                        )
-                                      ]);
-                                });
-                          },
-                        ):Container(),
+
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                            content: Text(
+                                              "Do you want to delete ${widget.GroupNames} group?",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.black),
+                                            ),
+                                            actions: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    ElevatedButton(
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .grey),
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text("Cancel")),
+                                                    SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          delete_group();
+                                                        },
+                                                        style: ElevatedButton
+                                                            .styleFrom(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .grey),
+                                                        child: Text("OK")),
+                                                  ],
+                                                ),
+                                              )
+                                            ]);
+                                      });
+                                },
+                              )
+                            : Container(),
                       ],
                     ),
                     onTap: () {
-                       
                       grpmember();
                     },
                   ),
@@ -1210,7 +1193,7 @@ class _groupChatState extends State<groupChat> {
                               Flexible(
                                 child: Container(
                                   child: Text(widget.GroupNames,
-                                   overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(fontSize: 18)),
                                 ),
                               ),
@@ -1249,12 +1232,12 @@ class _groupChatState extends State<groupChat> {
                                           height: 0,
                                           text: 'Group Information',
                                           onTap: () {
-                                            
                                             grpmember();
                                             Navigator.pop(context);
                                             Scaffold.of(context)
                                                 .openEndDrawer();
-                                                 print("----------Ramiz-----${groupmemblist.length}");
+                                            print(
+                                                "----------Ramiz-----${groupmemblist.length}");
                                           },
                                           Icon: const Icon(Icons.person)),
                                       const PopupMenuDivider()
@@ -1300,7 +1283,7 @@ class _groupChatState extends State<groupChat> {
                                               MaterialPageRoute<dynamic>(
                                                 builder:
                                                     (BuildContext context) =>
-                                                        const SearchFilter(),
+                                                        SearchFilter(),
                                               ),
                                               (route) => true,
                                               //if you want to disable back feature set to false
@@ -1638,6 +1621,7 @@ class _groupChatState extends State<groupChat> {
                       ))
                     ]))),
                 bottomSheet: ChatInputBox(
+                  buddyname: '',
                   onsent: onImageSend,
                   controller: chatController,
                   onTap: () {

@@ -29,7 +29,9 @@ class _OwnVoiceCardState extends State<OwnVoiceCard> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState();  
+  }
+ initialize() {
     myPlayer.openPlayer();
     // flutterSoundHelper.
 
@@ -68,7 +70,6 @@ class _OwnVoiceCardState extends State<OwnVoiceCard> {
     });
     print(duration);
   }
-
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -135,9 +136,11 @@ class _OwnVoiceCardState extends State<OwnVoiceCard> {
                                     //     _progress = posSec / sec;
                                     //   });
                                     // });
-                                    print("------------PLAYER============");
+                                 print("------------PLAYER============");
+                                    initialize();
 
                                     player?.play();
+                                    ProcessingState.ready;
                                   },
                                   icon: const Icon(
                                     Icons.play_arrow,
