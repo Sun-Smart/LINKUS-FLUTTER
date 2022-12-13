@@ -88,7 +88,7 @@ class _NewGroupState extends State<NewGroup> {
       "groupcreated": "${groupusername.toString()} created group",
       "status": "1"
     };
-    print("11111111111111111111111111111111111111111$timeStamp");
+    print("11111111111111111111111111111111111111111$time");
     print("1122344551122334455$data");
     http.Response response = await http.post(
       Uri.parse(Create_Group),

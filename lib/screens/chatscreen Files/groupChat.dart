@@ -41,12 +41,14 @@ class groupChat extends StatefulWidget {
   final GroupNames;
   final GroupKey;
   final senderName;
+  final VoidCallback callbackfnct;
 
   groupChat(
       {super.key,
       this.images,
       this.names,
       this.usernames,
+      required this.callbackfnct,
       this.buddyId,
       this.senderName,
       this.GroupImages,
@@ -149,6 +151,7 @@ class _groupChatState extends State<groupChat> {
   var responseBody;
 
   LoadChatHistory() async {
+    print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
     http.Response response =
         await http.post(Uri.parse(GroupChatHistory), body: {
       "limit": "20",
@@ -160,6 +163,7 @@ class _groupChatState extends State<groupChat> {
     });
 
     var jsonData = await jsonDecode(response.body);
+     responseStatusCode = response.statusCode;
     print("____________________________${jsonData.length}");
 
     for (var i = jsonData.length - 1; i >= 0; i--) {
@@ -328,6 +332,7 @@ class _groupChatState extends State<groupChat> {
       "showMore": false,
       "edited": null
     };
+    print("^^^^^^^^^^^^^^^^^^^^^^^^^^$data");
     String body = json.encode(data);
     http.Response response = await http.post(Uri.parse(Save_Msg_GroupChat),
         body: body,
@@ -336,6 +341,7 @@ class _groupChatState extends State<groupChat> {
     print("*********************************************************");
     print(
         "************************************************************************$statucode");
+        
   }
 
   _OnSendMap(String latlng, String SndrMsgId) async {
@@ -1155,6 +1161,7 @@ class _groupChatState extends State<groupChat> {
                 appBar: AppBar(
                   leading: IconButton(
                       onPressed: () {
+                        widget.callbackfnct();
                         Navigator.pop(context);
                       },
                       icon: const Icon(
@@ -1610,12 +1617,16 @@ class _groupChatState extends State<groupChat> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 300),
                                 child: Center(
-                                    child: GroupChat.GroupMessage != null
+                                    child:GroupChat.GroupMessage != null
                                         ? CircularProgressIndicator()
                                         : Container(
                                             child: Text(
-                                                "Your conversation goes here"),
-                                          )),
+                                                "Your conversation goes here"))
+                                        // ? CircularProgressIndicator()
+                                        // : Container(
+                                        //     child: Text(
+                                        //         "Your conversation goes here"),
+                                )    
                               );
                             }),
                       ))

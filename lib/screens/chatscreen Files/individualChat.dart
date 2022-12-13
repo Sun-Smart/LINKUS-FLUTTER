@@ -4,7 +4,6 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:encrypt/encrypt.dart';
 import 'package:file_picker/file_picker.dart';
@@ -38,7 +37,6 @@ import '../attachmentWidgets/sendermsg.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:io';
-
 
 import 'fileView.dart';
 
@@ -242,7 +240,7 @@ class _PersonalChatState extends State<PersonalChat> {
     print("true or flse----------${load_data}");
   }
 
- OnRefresh(limit) async {
+  OnRefresh(limit) async {
     http.Response response = await http.post(Uri.parse(chat_history), body: {
       "limit": (limit + 10).toString(),
       "message_id": senderid,
@@ -275,7 +273,6 @@ class _PersonalChatState extends State<PersonalChat> {
       chatLoading = true;
     }
   }
-
 
   LoadSendMessage(
     chatMsg,
@@ -1321,8 +1318,7 @@ class _PersonalChatState extends State<PersonalChat> {
                               data: Theme.of(context).copyWith(
                                 dividerTheme: const DividerThemeData(
                                     color: Colors.black, thickness: 0.5),
-                                iconTheme:
-                                    const IconThemeData(color: Colors.white),
+                                iconTheme: IconThemeData(color: Colors.white),
                               ),
                               child: PopupMenuButton(
                                   color: const Color.fromRGBO(1, 123, 255, 1),
@@ -2195,10 +2191,10 @@ class _PersonalChatState extends State<PersonalChat> {
                                         : null),
                               );
                             }),
+                      
                       ))
                     ]))),
                 bottomSheet: ChatInputBox(
-                 
                   buddyname: widget.names ?? '',
                   onsent: onImageSend,
                   controller: chatController,

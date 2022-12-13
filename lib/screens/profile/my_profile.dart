@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 
@@ -131,22 +132,46 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(
                 height: 10,
               ),
-              CircleAvatar(
-                radius: 60,
-                child: ClipOval(
-                  child: CachedNetworkImage(
-                    fit: BoxFit.cover,
-                    imageUrl: photourl,
-                    progressIndicatorBuilder:
-                        (context, url, downloadProgress) =>
-                            CircularProgressIndicator(
-                                value: downloadProgress.progress),
-                    errorWidget: (context, url, error) => const Icon(
-                      Icons.person,
-                      size: 22,
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    child: ClipOval(
+                      child: CachedNetworkImage(
+                        fit: BoxFit.cover,
+                        imageUrl: photourl,
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) =>
+                                CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                        errorWidget: (context, url, error) => const Icon(
+                          Icons.person,
+                          size: 22,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+               Positioned(
+                left: 80,
+                top: 90,
+                child:InkWell(
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.grey.withOpacity(0.7)
+                    ),
+                    child: Icon(Icons.camera_alt,size: 15,color: Colors.white,),
+                  ),
+                  onTap: (){
+  showAlertDialog(context) ;
+
+                  
+   } ),
+                )
+               
+                ],
               ),
               // Center(
               //   child: CircleAvatar(
@@ -398,4 +423,106 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         )));
   }
+  showAlertDialog(BuildContext context) {  
+  // Create button  
+ 
+  
+  // Create AlertDialog  
+  AlertDialog alert = AlertDialog(  
+    
+    title: Column(
+  
+      children: [
+        
+        InkWell(
+          child: Row(
+          //  mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Icon(Icons.camera_alt_rounded,
+              color: Colors.green,),
+              SizedBox(width: 10,),
+              Text("Choose from Gallery",
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 20
+              ),),
+            ],
+          ),
+       
+       onTap: ()async{
+         _pickFile(context);
+         Navigator.pop(context);
+         
+       }, ),
+       SizedBox(height: 10,),
+        InkWell(
+          child: Row(
+            children: [
+              Icon(Icons.delete,color: Colors.blue,),
+                  SizedBox(width: 10,),
+              Text("Remove Photo",
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 20
+              ),),
+            ],
+          ),
+       onTap: (){}, ),
+        SizedBox(height: 10,),
+          InkWell(
+          child: Row(
+            children: [
+              Icon(Icons.close,color: Colors.red,),
+                  SizedBox(width: 10,),
+              Text("Cancel",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 20
+              ),),
+            ],
+          ),
+       onTap: (){
+        Navigator.pop(context);
+       }, )
+      ],
+    ),  
+   // content: Text(""),  
+
+  );  
+  
+  // show the dialog  
+  showDialog(  
+    barrierDismissible: false,
+    context: context,  
+    builder: (BuildContext context) {  
+      return alert;  
+    },  
+  );  
+}  
+ 
+ Future _pickFile(BuildContext context) async {
+    var result = await FilePicker.platform.pickFiles(allowMultiple: false,
+    );
+    var path = result!.files.first.path;
+    var name=result.files.first.name;
+
+    print("-----path,,,,,name---------${path},,,,,${name}");
+    
+
+
+
+    // final path =
+    // join((await getTemporaryDirectory()).path, "${DateTime.now()}.png");
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (builder) => CameraViewPage(
+    //       path: path.toString(),
+    //       // result.path,
+    //       OnImagesend: widget.onsentimage,
+    //     ),
+    //  ),
+   // );
+  }
+
 }
