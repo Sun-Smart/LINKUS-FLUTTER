@@ -19,10 +19,11 @@ class CameraViewPage extends StatelessWidget {
           actions: [
             IconButton(onPressed: () {}, icon: const Icon(Icons.crop_rotate)),
             IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.emoji_emotions_outlined,
-                ))
+              onPressed: () {},
+              icon: const Icon(
+                Icons.emoji_emotions_outlined,
+              ),
+            )
           ]),
       body: Container(
         color: Colors.black,

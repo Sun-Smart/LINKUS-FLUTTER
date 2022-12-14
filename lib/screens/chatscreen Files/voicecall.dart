@@ -76,7 +76,7 @@ class _VoiceCallState extends State<VoiceCall> {
             height: MediaQuery.of(context).size.height / 5,
           ),
           const Text(
-            "Ringing....",
+            "Calling....",
             style: TextStyle(fontSize: 15),
           ),
           SizedBox(

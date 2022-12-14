@@ -59,7 +59,11 @@ class _landingPageState extends State<landingPage> {
   bool profImg = true;
   @override
   void initState() {
-    apiData();
+    setState(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) => apiData());
+      super.initState();
+    });
+
     // WidgetsBinding.instance.addPostFrameCallback((_) => apiData());
 
     super.initState();

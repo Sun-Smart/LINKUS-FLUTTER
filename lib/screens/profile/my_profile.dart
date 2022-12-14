@@ -112,6 +112,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
   updateimage(String path, mobile) async {
     print("-------path---------${path.split("/").last}");
+    showDialog(
+        context: context,
+        builder: (bc) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
 
     Map data = {"photourl": path, "mobile": mobile};
     print("datatatatat----$data");
@@ -119,11 +133,15 @@ class _ProfilePageState extends State<ProfilePage> {
         await http.post(Uri.parse(recentchatprofileupdate), body: data);
     print("response---------${response.body}");
     if (response.statusCode == 200) {
-      http.Response response =
-          await http.post(Uri.parse(updateuser_image), body: data);
-      print("response-111--------${response.body}");
-      MyProfileData();
+      Future.delayed(Duration(seconds: 1)).then((value) async {
+        http.Response response =
+            await http.post(Uri.parse(updateuser_image), body: data);
+        print("response-111--------${response.body}");
+        MyProfileData();
+        Navigator.pop(context);
+      });
     }
+    // MyProfileData();
   }
 
   crypto(plainText) {
@@ -158,7 +176,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               onPressed: () {
                 setState(() {
-                  widget.apidata;
+                  widget.apidata();
                 });
 
                 Navigator.pop(context);
@@ -570,6 +588,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Future _pickFile(BuildContext context) async {
     var result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
+      // allowedExtensions: ['jpg', 'jpeg', 'png'],
+      //     type: FileType.custom,
     );
     profile_path = result!.files.first.path;
     var name = result.files.first.name;
