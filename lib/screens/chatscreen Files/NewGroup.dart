@@ -15,6 +15,7 @@ import '../../variables/Api_Control.dart';
 
 import 'package:http/http.dart' as http;
 
+bool isChecked = false;
 bool AddButton = false;
 
 class NewGroup extends StatefulWidget {
@@ -344,33 +345,39 @@ class _NewGroupState extends State<NewGroup> {
           leadingWidth: 35,
           title: const Text('Contacts'),
           actions: [
-            // AddButton == true || widget.hidegroupname != ''
-            //     ? IconButton(
-            //         onPressed: () {
-            //           print(widget.hidegroupname != "");
-            //           if (widget.hidegroupname != "") {
-            //             print(testArray);
-            //             testArray.forEach((user) {
-            //               add_user_to_group(
-            //                   groupusrname: groupusrname ?? "",
-            //                   groupName: widget.hidegroupname ?? "",
-            //                   groupKey: widget.groupKey ?? "",
-            //                   grpuser: user['name'],
-            //                   mobile: user['number']);
-            //             });
-            //           } else {
-            //             CreateGroup();
-            //           }
-            //           // add_group();
-            //         },
-            //         icon: const Icon(
-            //           Icons.add,
-            //           size: 30,
-            //         ))
-            //     : Container(),
-            const SizedBox(
-              width: 5,
-            )
+            Checkbox(
+                checkColor: Colors.white,
+                // fillColor: MaterialStateProperty.resolveWith(getColor),
+                value: isChecked,
+                onChanged: (bool? value) {
+                  setState(() {
+                    isChecked = value!;
+                  });
+                  // AddButton == true || widget.hidegroupname != ''
+                  //     ? IconButton(
+                  //         onPressed: () {
+                  //           print(widget.hidegroupname != "");
+                  //           if (widget.hidegroupname != "") {
+                  //             print(testArray);
+                  //             testArray.forEach((user) {
+                  //               add_user_to_group(
+                  //                   groupusrname: groupusrname ?? "",
+                  //                   groupName: widget.hidegroupname ?? "",
+                  //                   groupKey: widget.groupKey ?? "",
+                  //                   grpuser: user['name'],
+                  //                   mobile: user['number']);
+                  //             });
+                  //           } else {
+                  //             CreateGroup();
+                  //           }
+                  //           // add_group();
+                  //         },
+                  //         icon: const Icon(
+                  //           Icons.add,
+                  //           size: 30,
+                  //         ))
+                  //     : Container(),
+                })
           ],
         ),
         body: NewGroupContact(
