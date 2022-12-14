@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -29,7 +30,7 @@ class NewGroup extends StatefulWidget {
 }
 
 class _NewGroupState extends State<NewGroup> {
-  bool isVisible = true;
+  bool isVisible = false;
   bool AddButton = false;
   TextEditingController groupNameController = TextEditingController();
   @override
@@ -347,12 +348,66 @@ class _NewGroupState extends State<NewGroup> {
           actions: [
             Checkbox(
                 checkColor: Colors.white,
-                // fillColor: MaterialStateProperty.resolveWith(getColor),
-                value: isChecked,
+                // fillColor: Colors.white,
+                value: isVisible,
                 onChanged: (bool? value) {
                   setState(() {
-                    isChecked = value!;
+                    isVisible = value!;
+                    print(value);
+
+                    for (int check = 0; check <= contactList.length; check++) {
+                      contactList[check].isChecked = value;
+                      setState(() {});
+                      log(contactList[check].isChecked.toString());
+                    }
+                    // if (isVisible == true) {
+                    //   print("sjdjd");
+                    //   for (var i = 0; i < contactList.length; i++) {
+                    //     if (contactList[i].isChecked == true) {
+                    //       contactList[i].isChecked = false;
+                    //     }
+                    //   }
+
+                    //   for (var i = 0; i < contactList.length; i++) {
+                    //     if (contactList[i].isChecked == true) {
+                    //       contactList[i].isChecked = false;
+                    //       print("-------");
+                    //     } else if (contactList[i].isChecked == false) {
+                    //       contactList[i].isChecked = true;
+                    //       print("++++++${contactList[i].phonenumber}");
+                    //     }
+                    //   }
+                    // } else {
+                    //   isVisible = false;
+                    //   setState(() {
+                    //     for (var i = 0; i < contactList.length; i++) {
+                    //       contactList[i].isChecked = false;
+                    //       print("------${contactList[i].phonenumber}");
+                    //     }
+                    //     isVisible = true;
+                    //   });
+                    // }
                   });
+                  // setState(() {
+                  //   isVisible = true;
+
+                  //   for (var i = 0; i < contactList.length; i++) {
+                  //     if (contactList[i].isChecked == true) {
+                  //       contactList[i].isChecked = false;
+                  //     }
+                  //   }
+
+                  //   for (var i = 0; i < contactList.length; i++) {
+                  //     if (contactList[i].isChecked == true) {
+                  //       contactList[i].isChecked = false;
+                  //       print("-------");
+                  //     } else if (contactList[i].isChecked == false) {
+                  //       contactList[i].isChecked = true;
+                  //       print("++++++${contactList[i].phonenumber}");
+                  //     }
+                  //   }
+                  //   isVisible = false;
+                  // });
                   // AddButton == true || widget.hidegroupname != ''
                   //     ? IconButton(
                   //         onPressed: () {
@@ -438,70 +493,70 @@ class _NewGroupState extends State<NewGroup> {
                         ),
                         fillColor: Colors.white,
                         filled: true,
-                        suffixIcon: isVisible
-                            ? TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isVisible = true;
-                                    for (var i = 0;
-                                        i < contactList.length;
-                                        i++) {
-                                      if (contactList[i].isChecked == true) {
-                                        contactList[i].isChecked = false;
-                                      }
-                                    }
+                        // suffixIcon: isVisible
+                        //     ? TextButton(
+                        //         onPressed: () {
+                        //           setState(() {
+                        //             isVisible = true;
+                        //             for (var i = 0;
+                        //                 i < contactList.length;
+                        //                 i++) {
+                        //               if (contactList[i].isChecked == true) {
+                        //                 contactList[i].isChecked = false;
+                        //               }
+                        //             }
 
-                                    for (var i = 0;
-                                        i < contactList.length;
-                                        i++) {
-                                      if (contactList[i].isChecked == true) {
-                                        contactList[i].isChecked = false;
-                                        print("-------");
-                                      } else if (contactList[i].isChecked ==
-                                          false) {
-                                        contactList[i].isChecked = true;
-                                        print(
-                                            "++++++${contactList[i].phonenumber}");
-                                      }
-                                    }
-                                    isVisible = false;
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 10),
-                                  child: Text(
-                                    'Select all',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                ),
-                              )
-                            : InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    for (var i = 0;
-                                        i < contactList.length;
-                                        i++) {
-                                      contactList[i].isChecked = false;
-                                      print(
-                                          "------${contactList[i].phonenumber}");
-                                    }
-                                    isVisible = true;
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 20),
-                                  child: Text(
-                                    'Unselect all',
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                ),
-                              ),
+                        //             for (var i = 0;
+                        //                 i < contactList.length;
+                        //                 i++) {
+                        //               if (contactList[i].isChecked == true) {
+                        //                 contactList[i].isChecked = false;
+                        //                 print("-------");
+                        //               } else if (contactList[i].isChecked ==
+                        //                   false) {
+                        //                 contactList[i].isChecked = true;
+                        //                 print(
+                        //                     "++++++${contactList[i].phonenumber}");
+                        //               }
+                        //             }
+                        //             isVisible = false;
+                        //           });
+                        //         },
+                        //         child: const Padding(
+                        //           padding: EdgeInsets.symmetric(
+                        //               vertical: 10, horizontal: 10),
+                        //           child: Text(
+                        //             'Select all',
+                        //             style: TextStyle(
+                        //                 color: Colors.black,
+                        //                 fontWeight: FontWeight.w800),
+                        //           ),
+                        //         ),
+                        //       )
+                        //     : InkWell(
+                        //         onTap: () {
+                        //           setState(() {
+                        //             for (var i = 0;
+                        //                 i < contactList.length;
+                        //                 i++) {
+                        //               contactList[i].isChecked = false;
+                        //               print(
+                        //                   "------${contactList[i].phonenumber}");
+                        //             }
+                        //             isVisible = true;
+                        //           });
+                        //         },
+                        //         child: const Padding(
+                        //           padding: EdgeInsets.symmetric(
+                        //               horizontal: 20, vertical: 20),
+                        //           child: Text(
+                        //             'Unselect all',
+                        //             style: TextStyle(
+                        //                 color: Colors.black,
+                        //                 fontWeight: FontWeight.w800),
+                        //           ),
+                        //         ),
+                        //       ),
                         hintText: 'Type a Group Name',
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 20)),

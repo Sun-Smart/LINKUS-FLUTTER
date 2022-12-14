@@ -41,6 +41,7 @@ import 'dart:io';
 import 'fileView.dart';
 
 ScrollController scrollController = ScrollController();
+var isNoData = false;
 
 class PersonalChat extends StatefulWidget {
   var names;
@@ -193,6 +194,10 @@ class _PersonalChatState extends State<PersonalChat> {
     print("-----------$Data");
     if (Data != 'no data found') {
       jsonData = await json.decode(Data.toString());
+    } else {
+      // setState(() {
+      isNoData = true;
+      // });
     }
     //response.body.toString();
 
@@ -230,6 +235,10 @@ class _PersonalChatState extends State<PersonalChat> {
           scrollToDown();
         }
       } else {
+        setState(() {
+          isNoData = true;
+        });
+
         print("-------no data found---");
         Data = "no data found";
       }
@@ -1231,7 +1240,7 @@ class _PersonalChatState extends State<PersonalChat> {
                               setState(() {
                                 widget.callback();
                               });
-
+                              isNoData = false;
                               Navigator.pop(
                                 context,
                               );
@@ -1622,6 +1631,7 @@ class _PersonalChatState extends State<PersonalChat> {
                     : AppBar(
                         leading: IconButton(
                             onPressed: () {
+                              isNoData = false;
                               Navigator.pop(context);
                             },
                             icon: Icon(
@@ -2028,6 +2038,8 @@ class _PersonalChatState extends State<PersonalChat> {
                             ),
                             fit: BoxFit.cover)),
                     child: Column(children: [
+                      // isNoData ? Text("data") : SizedBox(),
+
                       Expanded(
                           child: RefreshIndicator(
                         onRefresh: () {
@@ -2046,6 +2058,28 @@ class _PersonalChatState extends State<PersonalChat> {
                               // var Date_Time = ConvertingTimeStamp((int.parse(
                               //     chat.chatMessages[index].senttime)));
                               if (responseStatusCode == 200) {
+                                if (index == 0) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 10),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Color.fromARGB(245, 73, 158, 248),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      height: 40,
+                                      child: Center(
+                                          child: Text(
+                                        " End to End Encryptions",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                    ),
+                                  );
+                                }
                                 if (index == chat.chatMessages.length) {
                                   return Container(
                                     height: emojiShowing ? 400 : 150,
@@ -2187,9 +2221,9 @@ class _PersonalChatState extends State<PersonalChat> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 300),
                                 child: Center(
-                                    child: chat.chatMessages.firstRebuild
+                                    child: isNoData
                                         ? CircularProgressIndicator()
-                                        : null),
+                                        : CircularProgressIndicator()),
                               );
                             }),
                       ))
