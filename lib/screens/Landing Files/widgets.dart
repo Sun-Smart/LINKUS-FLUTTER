@@ -172,8 +172,7 @@ class _ChatListState extends State<ChatList> {
         if (Data[i]['filetype'] == 'text') {
           print("text");
           recentchatmsg.add(Data[i]['message']);
-          print(
-              "555551111111111111111texttttttt111111111555555${decrypted(Data[i]['message'], '')}");
+          // print("555551111111111111111texttttttt111111111555555${decrypted(Data[i]['message'], '')}");
         } else if (Data[i]['filetype'] == 'title') {
           print("audio");
           recentchatmsg.add("audio");
@@ -266,7 +265,7 @@ class _ChatListState extends State<ChatList> {
 
       print("------rrrrrrr----$test");
       var result = test.replaceAll('mp4', 'mp3');
-      print("=========result=====$result");
+      // print("=========result=====$result");
       return result;
     }
   }
@@ -591,7 +590,9 @@ class _attatchmentContentsState extends State<attatchmentContents> {
   var result;
 
   Future _pickFile(BuildContext context) async {
-    var result = await FilePicker.platform.pickFiles(allowMultiple: false);
+    var result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+    );
     var path = result!.files.first.path;
 
     // final path =
@@ -611,8 +612,8 @@ class _attatchmentContentsState extends State<attatchmentContents> {
   Future _sendFile(BuildContext context) async {
     var result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
-      // type: FileType.custom,
-      // allowedExtensions: ['pdf', 'docx']
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc'],
     );
     var path = result!.files.first.path;
     var name = result.files.first.name;
@@ -1024,6 +1025,7 @@ class GroupChatList extends StatefulWidget {
   final String senderName;
   final List GroupKeys;
   final DateTime? time;
+  final VoidCallback groupcallback;
 
   GroupChatList(
       {required this.profIcon,
@@ -1032,6 +1034,7 @@ class GroupChatList extends StatefulWidget {
       required this.GroupNames,
       required this.GroupKeys,
       required this.GroupCreated,
+      required this.groupcallback,
       required this.GroupImages,
       required this.mobileNumber,
       required this.senderName,
@@ -1075,6 +1078,7 @@ class _GroupChatListState extends State<GroupChatList> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => groupChat(
+                            callbackfnct: widget.groupcallback,
                             mobileNumber: widget.mobileNumber,
                             senderName: widget.senderName,
                             GroupNames: widget.GroupNames[index],

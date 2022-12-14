@@ -28,6 +28,10 @@ String unreadmessage_count = 'https://prod.herbie.ai:8153/getunreadmessage';
 String updateunreadcount = 'https://prod.herbie.ai:8153/updateUnreadtcount';
 String Statusupdate='https://prod.herbie.ai:8153/updatemystatus';
 String clearChatmessage='https://prod.herbie.ai:8153/clearSingleChatMessage';
+String removegroupadmin='https://prod.herbie.ai:8153/RemovegroupAdmin';
+String recentchatprofileupdate='https://prod.herbie.ai:8153/updateRecentChatProfileImage';
+String updateuser_image='https://prod.herbie.ai:8153/updateUserImage';
+String updatedprofile='https://prod.herbie.ai:8153/updateprofile';
 
 
 

@@ -103,7 +103,9 @@ class _landingPageState extends State<landingPage> {
                                   context,
                                   MaterialPageRoute<dynamic>(
                                     builder: (BuildContext context) =>
-                                        ProfilePage(),
+                                        ProfilePage(
+                                      apidata: apiData,
+                                    ),
                                   ),
                                   (route) => true,
                                   //if you want to disable back feature set to false
@@ -115,7 +117,7 @@ class _landingPageState extends State<landingPage> {
                                   ? ClipOval(
                                       child: CachedNetworkImage(
                                         fit: BoxFit.cover,
-                                        imageUrl: profileImg,
+                                        imageUrl: profileImg ?? "",
                                         progressIndicatorBuilder: (context, url,
                                                 downloadProgress) =>
                                             CircularProgressIndicator(
@@ -207,7 +209,9 @@ class _landingPageState extends State<landingPage> {
                                                           dynamic>(
                                                         builder: (BuildContext
                                                                 context) =>
-                                                            ProfilePage(),
+                                                            ProfilePage(
+                                                          apidata: apiData,
+                                                        ),
                                                       ),
                                                       (route) => true,
                                                       //if you want to disable back feature set to false

@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../Landing Files/widgets.dart';
-
+ bool emojiShowing = false;
 class ChatInputBox extends StatefulWidget {
   dynamic controller;
   dynamic onTap;

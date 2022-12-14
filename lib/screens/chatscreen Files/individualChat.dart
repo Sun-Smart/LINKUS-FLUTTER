@@ -1318,8 +1318,7 @@ class _PersonalChatState extends State<PersonalChat> {
                               data: Theme.of(context).copyWith(
                                 dividerTheme: const DividerThemeData(
                                     color: Colors.black, thickness: 0.5),
-                                iconTheme:
-                                    const IconThemeData(color: Colors.white),
+                                iconTheme: IconThemeData(color: Colors.white),
                               ),
                               child: PopupMenuButton(
                                   color: const Color.fromRGBO(1, 123, 255, 1),
@@ -2047,8 +2046,9 @@ class _PersonalChatState extends State<PersonalChat> {
                               //     chat.chatMessages[index].senttime)));
                               if (responseStatusCode == 200) {
                                 if (index == chat.chatMessages.length) {
-                                  return Container(
-                                    height: 150,
+                                   return Container(
+                                     height: emojiShowing? 400:150,
+                                    
                                   );
                                 }
                                 if (chat.chatMessages[index].fileType ==
@@ -2192,6 +2192,7 @@ class _PersonalChatState extends State<PersonalChat> {
                                         : null),
                               );
                             }),
+                      
                       ))
                     ]))),
                 bottomSheet: ChatInputBox(
