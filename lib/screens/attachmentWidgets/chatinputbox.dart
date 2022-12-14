@@ -370,6 +370,7 @@ class _ChatInputBoxState extends State<ChatInputBox> {
                       buttonMode: ButtonMode.MATERIAL)),
             ),
           )
+          //testing
         ],
       ),
     );
