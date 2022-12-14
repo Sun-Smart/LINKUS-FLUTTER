@@ -114,6 +114,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
 updateimage(String path,mobile)async {
 print("-------path---------${path.split("/").last}");
+ showDialog(
+        context: context,
+        builder: (bc) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
     
  Map data= {
                "photourl":path,
@@ -123,10 +137,19 @@ print("-------path---------${path.split("/").last}");
               http.Response response = await http.post(Uri.parse(recentchatprofileupdate), body: data);
               print("response---------${response.body}");
               if(response.statusCode==200){
-              http.Response response = await http.post(Uri.parse(updateuser_image), body: data);  
+                 Future.delayed(Duration(seconds: 1)).then((value)async {
+       
+         http.Response response = await http.post(Uri.parse(updateuser_image), body: data);  
                 print("response-111--------${response.body}");
-                MyProfileData();
+                  MyProfileData();
+                   Navigator.pop(context);
+                }
+               
+                );
+             
+               
               }
+              // MyProfileData();
               
 
 }
@@ -151,7 +174,7 @@ print("-------path---------${path.split("/").last}");
         var res = await request.send();
        
         updateimage("https://prod.herbie.ai:8153/uploadFiles/${name}", mob);
-         
+        
         }
   @override
   Widget build(BuildContext context) {
@@ -166,7 +189,8 @@ print("-------path---------${path.split("/").last}");
               ),
               onPressed: () {
                 setState(() {
-                   widget.apidata;
+                   
+                   widget.apidata();
                 });
              
                 Navigator.pop(context);
@@ -584,7 +608,9 @@ print("-------path---------${path.split("/").last}");
 }  
  
  Future _pickFile(BuildContext context) async {
-    var result = await FilePicker.platform.pickFiles(allowMultiple: false,
+    var result = await FilePicker.platform.pickFiles(allowMultiple: false, 
+    // allowedExtensions: ['jpg', 'jpeg', 'png'],
+    //     type: FileType.custom,
     );
      profile_path = result!.files.first.path;
     var name=result.files.first.name;

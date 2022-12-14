@@ -592,6 +592,8 @@ class _attatchmentContentsState extends State<attatchmentContents> {
   Future _pickFile(BuildContext context) async {
     var result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
+      allowedExtensions: ['jpg', 'jpeg', 'png'],
+        type: FileType.custom,
     );
     var path = result!.files.first.path;
 

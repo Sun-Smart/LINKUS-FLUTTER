@@ -2230,7 +2230,7 @@ class _PersonalChatState extends State<PersonalChat> {
 
   ConvertingTimeStamp(senttime) {
     final DateTime date = DateTime.fromMillisecondsSinceEpoch(senttime);
-    var format = DateFormat('hh:mm').format(date);
+    var format = DateFormat.Hm().format(date);
     //var formattedTime = format.format(date);
     print("aaaaaaaaaaaaaaaaaa-------$format");
     return format.toString();

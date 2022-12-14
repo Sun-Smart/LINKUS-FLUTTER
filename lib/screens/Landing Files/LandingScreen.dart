@@ -59,7 +59,11 @@ class _landingPageState extends State<landingPage> {
   bool profImg = true;
   @override
   void initState() {
-    apiData();
+    setState(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) => apiData());
+      super.initState();
+    });
+
     // WidgetsBinding.instance.addPostFrameCallback((_) => apiData());
 
     super.initState();
@@ -99,6 +103,7 @@ class _landingPageState extends State<landingPage> {
                                 EdgeInsets.only(top: 10, left: 20, bottom: 10),
                             child: InkWell(
                               onTap: () async {
+                                
                                 Navigator.pushAndRemoveUntil<dynamic>(
                                   context,
                                   MaterialPageRoute<dynamic>(
