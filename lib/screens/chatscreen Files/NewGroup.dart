@@ -1,17 +1,12 @@
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-
 import 'package:intl/intl.dart';
 import 'package:linkus/screens/Login%20Files/loginscreen.dart';
 import 'package:linkus/screens/chatscreen%20Files/dataList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../variables/Api_Control.dart';
-
 import 'package:http/http.dart' as http;
 
 class NewGroup extends StatefulWidget {
@@ -36,6 +31,7 @@ class _NewGroupState extends State<NewGroup> {
   }
 
   var mobile;
+  String searchString = "";
   var groupusrname;
   var groupusername;
   var mob;
@@ -48,7 +44,7 @@ class _NewGroupState extends State<NewGroup> {
   var responseStatusCode;
   var grpname1;
   var grpname;
-
+  var usernames = [];
   int? memberslength;
 
   var responseStatus;
@@ -386,6 +382,7 @@ class _NewGroupState extends State<NewGroup> {
                 setState(() {
                   if (value == '') {
                     setState(() {
+                      searchString = value.toLowerCase();
                       AddButton = false;
                     });
                   } else {
@@ -523,7 +520,7 @@ class _NewGroupContactState extends State<NewGroupContact> {
           isChecked: false,
           phonenumber: jsonDecode(response.body)[i]['mobile']));
     }
-
+    filterContactList = contactList;
     setState(() {});
   }
 
@@ -538,11 +535,11 @@ class _NewGroupContactState extends State<NewGroupContact> {
             child: TextFormField(
                 controller: groupcontoller,
                 onChanged: (value) {
-                  if (mounted) {
-                    setState() => searchString = value.toLowerCase();
-                  }
-                  if (mounted) {
-                    setState() => searchString = value.toLowerCase();
+                  print(contactList[0].Name);
+                  filtercourse(value);
+                  if (filterContactList.isEmpty) {
+                    filterContactList = contactList;
+                    setState(() {});
                   }
                 },
                 decoration: const InputDecoration(
@@ -554,11 +551,12 @@ class _NewGroupContactState extends State<NewGroupContact> {
         ),
         Expanded(
           child: ListView.separated(
-              itemCount: contactList.length,
+              itemCount: filterContactList.length,
               itemBuilder: (BuildContext context, int index) {
-                final employee = contactList[index];
+                // contactList = filterContactList;
 
-                return contactList[index]
+                final employee = filterContactList[index];
+                return filterContactList[index]
                         .Name
                         .toString()
                         .toLowerCase()
@@ -566,11 +564,6 @@ class _NewGroupContactState extends State<NewGroupContact> {
                     ? CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.trailing,
                         value: employee.isChecked,
-                        //         value:contactList[index].isChecked,
-                        //           onChanged: (val) {
-                        // contactList[index].isChecked = val!;
-                        // setState(() {});
-                        // },
                         onChanged: (val) {
                           setState(() {
                             print('------check--------${employee.isChecked}');
@@ -600,7 +593,7 @@ class _NewGroupContactState extends State<NewGroupContact> {
                             }
                           });
                         },
-                        title: Text(contactList[index].Name),
+                        title: Text(filterContactList[index].Name),
                         secondary: CircleAvatar(
                           child: ClipOval(
                             child: CachedNetworkImage(
@@ -617,14 +610,14 @@ class _NewGroupContactState extends State<NewGroupContact> {
                             ),
                           ),
                         ),
-                        subtitle: Text(contactList[index].jobProfile),
+                        subtitle: Text(filterContactList[index].jobProfile),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 0),
                       )
                     : Container();
               },
               separatorBuilder: (BuildContext context, int index) {
-                return contactList[index]
+                return filterContactList[index]
                         .toString()
                         .toLowerCase()
                         .contains(searchString)
@@ -634,5 +627,12 @@ class _NewGroupContactState extends State<NewGroupContact> {
         ),
       ],
     );
+  }
+
+  void filtercourse(value) {
+    filterContactList = contactList
+        .where((o) => o.Name.toLowerCase().contains(value.toLowerCase()))
+        .toList();
+    setState(() {});
   }
 }

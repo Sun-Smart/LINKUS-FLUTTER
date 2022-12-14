@@ -64,21 +64,22 @@ class _CameraScreenState extends State<CameraScreen> {
           ]),
       body: Stack(children: [
         FutureBuilder(
-            future: cameraValue,
-            builder: ((context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return CameraPreview(_cameraController);
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            })),
+          future: cameraValue,
+          builder: ((context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return CameraPreview(_cameraController);
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+        ),
         Positioned(
           bottom: 0.0,
           child: Container(
             padding: const EdgeInsets.only(top: 5, bottom: 5),
-            height: MediaQuery.of(context).size.height * 0.1,
+            height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             color: Colors.black,
             child: Column(
