@@ -40,7 +40,6 @@ class ChatInputBox extends StatefulWidget {
 class _ChatInputBoxState extends State<ChatInputBox> {
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   bool MicIcon = true;
-  bool emojiShowing = false;
   bool emojiVisibility = true;
   bool isKeyboardVisible = false;
   FlutterSoundRecorder myRecorder = FlutterSoundRecorder();
@@ -199,17 +198,9 @@ class _ChatInputBoxState extends State<ChatInputBox> {
                                         child: IconButton(
                                             onPressed: () {
                                               setState(() {
-                                                scrollController.animateTo(
-                                                    scrollController.position
-                                                        .maxScrollExtent,
-                                                    duration: Duration(
-                                                        milliseconds: 200),
-                                                    curve: Curves.easeInOut);
-                                                print(emojiShowing);
                                                 emojiVisibility = false;
                                                 // MicIcon = false;
                                                 emojiShowing = !emojiShowing;
-
                                                 FocusScope.of(context)
                                                     .requestFocus(FocusNode());
                                               });
