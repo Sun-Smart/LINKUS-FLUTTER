@@ -12,8 +12,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../Landing Files/widgets.dart';
-import '../chatscreen Files/individualChat.dart';
-  bool emojiShowing = false;
+
+bool emojiShowing = false;
 
 class ChatInputBox extends StatefulWidget {
   dynamic controller;
@@ -39,6 +39,7 @@ class ChatInputBox extends StatefulWidget {
 class _ChatInputBoxState extends State<ChatInputBox> {
   GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   bool MicIcon = true;
+  bool emojiShowing = false;
   bool emojiVisibility = true;
   bool isKeyboardVisible = false;
   FlutterSoundRecorder myRecorder = FlutterSoundRecorder();
@@ -195,13 +196,8 @@ class _ChatInputBoxState extends State<ChatInputBox> {
                                     prefixIcon: Material(
                                         color: Colors.transparent,
                                         child: IconButton(
-                                          
                                             onPressed: () {
                                               setState(() {
-                                                  scrollController.animateTo(
-                        scrollController.position.maxScrollExtent,
-                        duration: Duration(milliseconds: 200),
-                        curve: Curves.easeInOut);
                                                 emojiVisibility = false;
                                                 // MicIcon = false;
                                                 emojiShowing = !emojiShowing;
@@ -377,6 +373,5 @@ class _ChatInputBoxState extends State<ChatInputBox> {
         ],
       ),
     );
- 
   }
 }

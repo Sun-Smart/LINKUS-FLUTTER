@@ -56,40 +56,24 @@ class _groupTabState extends State<groupTab> {
       "charset": "utf-8"
     });
     responseStatusCode = response.statusCode;
-    print(response.body);
+    print("${response.body}-------length---------${response.body.length}");
 
     Data = jsonDecode(response.body);
-    // Data = Data.sort((a, b) => {
+    print("------------length----------${Data.length}");
 
-    // })
-    // Data.sort((a, b) {
+    Data.removeWhere((element) => element["groupname"] == "");
+    Data.removeWhere((element) =>
+        element["timestamp"] == null || element["timestamp"] == "");
 
-    // })
-    //Data.sort();
-// var getdata= Data;
-    //  var getdta;
-    //     getdta = Data;
-      Data.sort((a, b) => a['groupname'].toLowerCase().compareTo(b['groupname'].toLowerCase()));
+    Data.sort((a, b) => b['timestamp']
+        .toString()
+        .toLowerCase()
+        .compareTo(a['timestamp'].toString().toLowerCase()));
     print('testing,${Data}');
-    //  DateTime.fromMillisecondsSinceEpoch(weatherData['daily'][i]['dt'].toInt() * 1000)
-    // Data.sort((a, b) {
-    //   print("${a}, ${b}");
-    //   return a;
-      
-    //   // var c =
-    //   //     DateTime.fromMillisecondsSinceEpoch(a['timestamp'].toInt()*1000);
-    //   // var d =
-    //   //     DateTime.fromMillisecondsSinceEpoch(b['timestamp'].toInt()*1000);
-    //   // return c.isBefore(d) ? 1 : -1;
+
     // });
     print('testing2,${Data}');
-//  Data.sort((a, b) {
-//         var c = int.parse(DateTime.parse(a.timestamp).toString());
-//        var d = int.parse(DateTime.parse(b.timestamp).toString());
-//          return c -d;
-//        });
-    //print("5555555555$getdata");
-    // var Data = d1;
+
     print("-------------${Data}");
     print(Data.length);
     // var ;
@@ -188,6 +172,7 @@ class _groupTabState extends State<groupTab> {
                   ),
                 ))),
         GroupChatList(
+          groupcallback: LoadGroupData,
           GroupCreated: GroupCreated,
           GroupImages: GroupImages,
           GroupKeys: GroupKey,

@@ -1,15 +1,15 @@
 // ignore_for_file: non_constant_identifier_names, file_names, prefer_typing_uninitialized_variables
 class Employee {
-  int ?id;
+  int? id;
   String Name;
   bool isChecked;
   String jobProfile;
   String? photourl;
   String? status;
-  String?phonenumber;
+  String? phonenumber;
   int? responseOfStatusCode;
   Employee(
-      { this.id,
+      {this.id,
       required this.Name,
       required this.jobProfile,
       required this.isChecked,
@@ -21,8 +21,9 @@ class Employee {
 
 ///
 var responseOfStatusCode;
-List<Employee>contactList = [];
+List<Employee> contactList = [];
 List<dynamic> Contactmodel = [];
+List<Employee> filterContactList = [];
 List<Employee> liveItems = [];
-List testArray=[];
-List testArray2=[];
+List testArray = [];
+List testArray2 = [];

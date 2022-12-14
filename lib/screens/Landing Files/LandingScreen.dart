@@ -14,10 +14,10 @@ import 'package:linkus/screens/mainmenu/shelf/shelf.dart';
 import 'package:linkus/screens/mainmenu/starredscreen/starred.dart';
 import 'package:linkus/screens/mainmenu/task/mytask.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../variables/Api_Control.dart';
-import '../birthday/birthday_page.dart';
-import '../change Password/change_password.dart';
-import '../profile/my_profile.dart';
+import 'package:linkus/variables/Api_Control.dart';
+import 'package:linkus/screens/birthday/birthday_page.dart';
+import 'package:linkus/screens/change%20Password/change_password.dart';
+import 'package:linkus/screens/profile/my_profile.dart';
 import 'contactTab.dart';
 import 'groupTab.dart';
 import 'recentTab.dart';
@@ -65,8 +65,7 @@ class _landingPageState extends State<landingPage> {
     super.initState();
   }
 
-  updateStatus(
-      String loginnumber, status, last_changed, deviceid) async {
+  updateStatus(String loginnumber, status, last_changed, deviceid) async {
     print("ssssssssssssssssssssssssss");
     var data = {
       "mobile": loginnumber.toString(),
@@ -104,7 +103,9 @@ class _landingPageState extends State<landingPage> {
                                   context,
                                   MaterialPageRoute<dynamic>(
                                     builder: (BuildContext context) =>
-                                        ProfilePage(),
+                                        ProfilePage(
+                                      apidata: apiData,
+                                    ),
                                   ),
                                   (route) => true,
                                   //if you want to disable back feature set to false
@@ -116,7 +117,7 @@ class _landingPageState extends State<landingPage> {
                                   ? ClipOval(
                                       child: CachedNetworkImage(
                                         fit: BoxFit.cover,
-                                        imageUrl: profileImg,
+                                        imageUrl: profileImg ?? "",
                                         progressIndicatorBuilder: (context, url,
                                                 downloadProgress) =>
                                             CircularProgressIndicator(
@@ -141,33 +142,37 @@ class _landingPageState extends State<landingPage> {
                                     ),
                             ),
                           ),
-                          title: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          title: Row(
                             children: [
-                              username != null
-                                  ? Text(
-                                      username??"".toString(),
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.normal),
-                                    )
-                                  : Container(
-                                      child: Text('Loading...'),
-                                    ),
-                              SizedBox(
-                                height: 5,
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  username != null
+                                      ? Text(
+                                          username ?? "".toString(),
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.normal),
+                                        )
+                                      : Container(
+                                          child: Text('Loading...'),
+                                        ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  designation != null
+                                      ? Text(
+                                          designation.toString(),
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.normal),
+                                        )
+                                      : Container(
+                                          child: Text('Loading...'),
+                                        ),
+                                ],
                               ),
-                              designation != null
-                                  ? Text(
-                                      designation.toString(),
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.normal),
-                                    )
-                                  : Container(
-                                      child: Text('Loading...'),
-                                    ),
                             ],
                           ),
                           actions: [
@@ -204,7 +209,9 @@ class _landingPageState extends State<landingPage> {
                                                           dynamic>(
                                                         builder: (BuildContext
                                                                 context) =>
-                                                            ProfilePage(),
+                                                            ProfilePage(
+                                                          apidata: apiData,
+                                                        ),
                                                       ),
                                                       (route) => true,
                                                       //if you want to disable back feature set to false
@@ -497,8 +504,6 @@ class _landingPageState extends State<landingPage> {
                                                   ),
                                                   height: 0,
                                                   onTap: () {
-                                                    
-
                                                     Navigator.pop(context);
 
                                                     showDialog<String>(
@@ -555,14 +560,15 @@ class _landingPageState extends State<landingPage> {
                                                                 ),
                                                                 InkWell(
                                                                   onTap: () {
-                                                                    setState(() {
-                                                      updateStatus(
-                                                          mobileNumber,
-                                                          "offline",
-                                                          DateTime.now()
-                                                              .millisecondsSinceEpoch,
-                                                          "0");
-                                                    });
+                                                                    setState(
+                                                                        () {
+                                                                      updateStatus(
+                                                                          mobileNumber,
+                                                                          "offline",
+                                                                          DateTime.now()
+                                                                              .millisecondsSinceEpoch,
+                                                                          "0");
+                                                                    });
                                                                     Navigator
                                                                         .pushAndRemoveUntil<
                                                                             dynamic>(
@@ -637,8 +643,11 @@ class _landingPageState extends State<landingPage> {
                           ])),
                       body: TabBarView(
                         children: [
-                          Tab(icon: recentTab(name: username.toString(),
-                         ),),
+                          Tab(
+                            icon: recentTab(
+                              name: username.toString(),
+                            ),
+                          ),
                           Tab(
                               icon: contactsTab(
                                   mobileNumber: mobileNumber.toString())),

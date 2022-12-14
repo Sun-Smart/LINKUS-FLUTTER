@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../Login Files/loginscreen.dart';
 import '../chatscreen Files/groupChat.dart';
 import '../chatscreen Files/individualChat.dart';
+
+File? pickedImage;
 
 //wertyuioiuyfd
 class ChatList extends StatefulWidget {
@@ -64,9 +67,8 @@ class _ChatListState extends State<ChatList> {
   var loader;
   @override
   void initState() {
-    
-      LoadData();
-    
+    LoadData();
+
     if (usernames.isEmpty) {
       setState(() {
         noData = true;
@@ -170,7 +172,7 @@ class _ChatListState extends State<ChatList> {
         if (Data[i]['filetype'] == 'text') {
           print("text");
           recentchatmsg.add(Data[i]['message']);
-          print("555551111111111111111texttttttt111111111555555${decrypted(Data[i]['message'], '')}");
+          // print("555551111111111111111texttttttt111111111555555${decrypted(Data[i]['message'], '')}");
         } else if (Data[i]['filetype'] == 'title') {
           print("audio");
           recentchatmsg.add("audio");
@@ -260,12 +262,11 @@ class _ChatListState extends State<ChatList> {
       var decoded = base64.decode(base64.normalize(value));
       print("------rrrrrrr----$decoded");
       var test = utf8.decode(decoded);
-      
-     print("------rrrrrrr----$test");
+
+      print("------rrrrrrr----$test");
       var result = test.replaceAll('mp4', 'mp3');
-      print("=========result=====$result");
+      // print("=========result=====$result");
       return result;
-      
     }
   }
 
@@ -298,7 +299,6 @@ class _ChatListState extends State<ChatList> {
                     onChanged: (value) {
                       setState(() {
                         searchString = value.toLowerCase();
-
                       });
                     },
                     decoration: const InputDecoration(
@@ -590,7 +590,9 @@ class _attatchmentContentsState extends State<attatchmentContents> {
   var result;
 
   Future _pickFile(BuildContext context) async {
-    var result = await FilePicker.platform.pickFiles(allowMultiple: false);
+    var result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+    );
     var path = result!.files.first.path;
 
     // final path =
@@ -610,8 +612,8 @@ class _attatchmentContentsState extends State<attatchmentContents> {
   Future _sendFile(BuildContext context) async {
     var result = await FilePicker.platform.pickFiles(
       allowMultiple: false,
-      // type: FileType.custom,
-      // allowedExtensions: ['pdf', 'docx']
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc'],
     );
     var path = result!.files.first.path;
     var name = result.files.first.name;
@@ -629,15 +631,15 @@ class _attatchmentContentsState extends State<attatchmentContents> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
                 backgroundColor: Colors.white,
-               //  content:  Text(name),
-               title: Text('Send $name to ${widget.buddyname} ?',
-               style: TextStyle(
-                fontSize: 18,
-                color: Colors.black,
-                fontWeight: FontWeight.w500
-               ),),
+                //  content:  Text(name),
+                title: Text(
+                  'Send $name to ${widget.buddyname} ?',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500),
+                ),
                 actions: [
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -737,14 +739,16 @@ class _attatchmentContentsState extends State<attatchmentContents> {
                   ),
                   InkWell(
                     onTap: () {
+                      // pickImage(ImageSource.camera);
                       Navigator.pop(context);
-                      // Navigator.pop(context);
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CameraScreen(
-                                    onImageSend: widget.onsentimage,
-                                  )));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CameraScreen(
+                            onImageSend: widget.onsentimage,
+                          ),
+                        ),
+                      );
                     },
                     child: Column(
                       children: const [
@@ -831,6 +835,20 @@ class _attatchmentContentsState extends State<attatchmentContents> {
           ),
         ));
   }
+
+// //Image Picker Func
+//   pickImage(ImageSource imageType) async {
+//     try {
+//       final photo = await ImagePicker().pickImage(source: imageType);
+//       if (photo == null) return;
+//       final tempImage = File(photo.path);
+//       setState(() {
+//         pickedImage = tempImage;
+//       });
+//     } catch (error) {
+//       debugPrint(error.toString());
+//     }
+//   }
 }
 
 class allContactsList extends StatefulWidget {
@@ -1007,6 +1025,7 @@ class GroupChatList extends StatefulWidget {
   final String senderName;
   final List GroupKeys;
   final DateTime? time;
+  final VoidCallback groupcallback;
 
   GroupChatList(
       {required this.profIcon,
@@ -1015,6 +1034,7 @@ class GroupChatList extends StatefulWidget {
       required this.GroupNames,
       required this.GroupKeys,
       required this.GroupCreated,
+      required this.groupcallback,
       required this.GroupImages,
       required this.mobileNumber,
       required this.senderName,
@@ -1058,6 +1078,7 @@ class _GroupChatListState extends State<GroupChatList> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => groupChat(
+                            callbackfnct: widget.groupcallback,
                             mobileNumber: widget.mobileNumber,
                             senderName: widget.senderName,
                             GroupNames: widget.GroupNames[index],
