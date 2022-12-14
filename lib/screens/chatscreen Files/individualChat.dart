@@ -2046,8 +2046,9 @@ class _PersonalChatState extends State<PersonalChat> {
                               //     chat.chatMessages[index].senttime)));
                               if (responseStatusCode == 200) {
                                 if (index == chat.chatMessages.length) {
-                                  return Container(
-                                    height: 150,
+                                   return Container(
+                                     height: emojiShowing? 400:150,
+                                    
                                   );
                                 }
                                 if (chat.chatMessages[index].fileType ==

@@ -1,14 +1,17 @@
 // ignore_for_file: prefer_const_constructors, prefer_typing_uninitialized_variables, non_constant_identifier_names, avoid_print
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 
 
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:linkus/variables/Api_Control.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +19,8 @@ import 'dropdown.dart';
 import 'dropdown_tone.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final VoidCallback apidata;
+   ProfilePage({Key? key,required this.apidata}) : super(key: key);
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -42,6 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
   var photourl;
   var marital;
   var mob;
+   var profile_path;
 
   MyProfileData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -107,6 +112,47 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+updateimage(String path,mobile)async {
+print("-------path---------${path.split("/").last}");
+    
+ Map data= {
+               "photourl":path,
+                "mobile":mobile
+            };
+            print("datatatatat----$data");
+              http.Response response = await http.post(Uri.parse(recentchatprofileupdate), body: data);
+              print("response---------${response.body}");
+              if(response.statusCode==200){
+              http.Response response = await http.post(Uri.parse(updateuser_image), body: data);  
+                print("response-111--------${response.body}");
+                MyProfileData();
+              }
+              
+
+}
+ crypto(plainText) {
+    var encoded1 = base64.encode(utf8.encode(plainText));
+    return encoded1;
+  }
+  onImageSend(String path,String name ) async {
+   
+    var request = http.MultipartRequest('POST', Uri.parse(uploadImage));
+    print("#######profile#################$request");
+    request.files.add(await http.MultipartFile.
+    fromBytes(
+        "img", File(path).readAsBytesSync(),
+        filename: path.split("/").last,
+        
+        // "img", path,
+       
+        )
+        
+        );
+        var res = await request.send();
+       
+        updateimage("https://prod.herbie.ai:8153/uploadFiles/${name}", mob);
+         
+        }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,6 +165,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 size: 25,
               ),
               onPressed: () {
+                setState(() {
+                   widget.apidata;
+                });
+             
                 Navigator.pop(context);
               }),
           backgroundColor: const Color.fromRGBO(1, 123, 255, 1),
@@ -135,10 +185,14 @@ class _ProfilePageState extends State<ProfilePage> {
               Stack(
                 children: [
                   CircleAvatar(
-                    radius: 60,
+                   radius: 60,
+                   
                     child: ClipOval(
                       child: CachedNetworkImage(
-                        fit: BoxFit.cover,
+                           width: MediaQuery.of(context).size.width/2,
+                           height: MediaQuery.of(context).size.height/2,
+            fit: BoxFit.cover,
+                        //  fit: BoxFit.fitWidth,
                         imageUrl: photourl,
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
@@ -429,62 +483,91 @@ class _ProfilePageState extends State<ProfilePage> {
   
   // Create AlertDialog  
   AlertDialog alert = AlertDialog(  
+   shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
     
     title: Column(
   
       children: [
         
-        InkWell(
-          child: Row(
-          //  mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Icon(Icons.camera_alt_rounded,
-              color: Colors.green,),
-              SizedBox(width: 10,),
-              Text("Choose from Gallery",
-              style: TextStyle(
-                color: Colors.green,
-                fontSize: 20
-              ),),
-            ],
-          ),
-       
-       onTap: ()async{
+        Row(
+         mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              children: [
+                InkWell(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.green,
+                    child: Icon(Icons.camera_alt_rounded,
+                    color: Colors.white,size: 20,),
+                  ),
+                  onTap: ()async{
+           
          _pickFile(context);
+        Navigator.pop(context);
+         
+       },
+                ),
+                 SizedBox(height: 10,),
+                Text("Gallery",
+                   style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold
+                ),)
+              ],
+            ),
+         
+            Column(
+              children: [
+                InkWell(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    child: Icon(Icons.remove_circle_outline,
+                    color: Colors.white,
+                    size: 20,),
+                  ),
+                  onTap: (){
+       
+         
+       },
+                ),
+                 SizedBox(height: 10,),
+                Text("Remove",
+                   style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold
+                ),)
+              ],
+            ),
+            Column(
+              children: [
+                InkWell(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.close,
+                    color: Colors.white,
+                    size: 20),
+                  ),
+                  onTap: ()async{
+       
          Navigator.pop(context);
          
-       }, ),
-       SizedBox(height: 10,),
-        InkWell(
-          child: Row(
-            children: [
-              Icon(Icons.delete,color: Colors.blue,),
-                  SizedBox(width: 10,),
-              Text("Remove Photo",
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 20
-              ),),
-            ],
-          ),
-       onTap: (){}, ),
-        SizedBox(height: 10,),
-          InkWell(
-          child: Row(
-            children: [
-              Icon(Icons.close,color: Colors.red,),
-                  SizedBox(width: 10,),
-              Text("Cancel",
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 20
-              ),),
-            ],
-          ),
-       onTap: (){
-        Navigator.pop(context);
-       }, )
-      ],
+       },
+                ),
+                SizedBox(height: 10,),
+                Text("Cancel",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold
+                ),
+               )
+              ],
+            ),
+           
+          ],
+        ),
+    ],
     ),  
    // content: Text(""),  
 
@@ -503,10 +586,17 @@ class _ProfilePageState extends State<ProfilePage> {
  Future _pickFile(BuildContext context) async {
     var result = await FilePicker.platform.pickFiles(allowMultiple: false,
     );
-    var path = result!.files.first.path;
+     profile_path = result!.files.first.path;
     var name=result.files.first.name;
 
-    print("-----path,,,,,name---------${path},,,,,${name}");
+    print("-----path,,,,,name---------${profile_path},,,,,${name}");
+     
+onImageSend(profile_path,name);
+  
+    //updateimage(profile_path,mob);
+   
+  
+
     
 
 
