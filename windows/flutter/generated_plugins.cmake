@@ -3,11 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  agora_rtc_engine
   emoji_picker_flutter
   flutter_webrtc
   geolocator_windows
-  iris_event
   permission_handler_windows
   syncfusion_pdfviewer_windows
   url_launcher_windows

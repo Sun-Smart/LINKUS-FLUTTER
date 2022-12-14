@@ -530,28 +530,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   InkWell(
                     child: CircleAvatar(
-                      backgroundColor: Colors.blue,
-                      child: Icon(
-                        Icons.remove_circle_outline,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    onTap: () {},
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Remove",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  InkWell(
-                    child: CircleAvatar(
                       backgroundColor: Colors.red,
                       child: Icon(Icons.close, color: Colors.white, size: 20),
                     ),
