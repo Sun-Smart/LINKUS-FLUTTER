@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:get/get.dart';
 
 import 'package:intl/intl.dart';
 import 'package:linkus/screens/Login%20Files/loginscreen.dart';
@@ -13,6 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../variables/Api_Control.dart';
 
 import 'package:http/http.dart' as http;
+
+bool isChecked = false;
+bool AddButton = false;
 
 class NewGroup extends StatefulWidget {
   String? hidegroupname;
@@ -25,7 +30,7 @@ class NewGroup extends StatefulWidget {
 }
 
 class _NewGroupState extends State<NewGroup> {
-  bool isVisible = true;
+  bool isVisible = false;
   bool AddButton = false;
   TextEditingController groupNameController = TextEditingController();
   @override
@@ -36,6 +41,7 @@ class _NewGroupState extends State<NewGroup> {
   }
 
   var mobile;
+  String searchString = "";
   var groupusrname;
   var groupusername;
   var mob;
@@ -48,7 +54,7 @@ class _NewGroupState extends State<NewGroup> {
   var responseStatusCode;
   var grpname1;
   var grpname;
-
+  var usernames = [];
   int? memberslength;
 
   var responseStatus;
@@ -88,7 +94,7 @@ class _NewGroupState extends State<NewGroup> {
       "groupcreated": "${groupusername.toString()} created group",
       "status": "1"
     };
-    print("11111111111111111111111111111111111111111$timeStamp");
+    print("11111111111111111111111111111111111111111$time");
     print("1122344551122334455$data");
     http.Response response = await http.post(
       Uri.parse(Create_Group),
@@ -324,25 +330,246 @@ class _NewGroupState extends State<NewGroup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(1, 123, 255, 1),
-        leading: IconButton(
-            onPressed: () {
-              for (var i = 0; i < contactList.length; i++) {
-                contactList[i].isChecked = false;
-              }
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              size: 25,
-            )),
-        leadingWidth: 35,
-        title: const Text('Contacts'),
-        actions: [
-          AddButton == true || widget.hidegroupname != ''
-              ? IconButton(
-                  onPressed: () {
+        appBar: AppBar(
+          backgroundColor: const Color.fromRGBO(1, 123, 255, 1),
+          leading: IconButton(
+              onPressed: () {
+                for (var i = 0; i < contactList.length; i++) {
+                  contactList[i].isChecked = false;
+                }
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 25,
+              )),
+          leadingWidth: 35,
+          title: const Text('Contacts'),
+          actions: [
+            Checkbox(
+                checkColor: Colors.white,
+                // fillColor: Colors.white,
+                value: isVisible,
+                onChanged: (bool? value) {
+                  setState(() {
+                    isVisible = value!;
+                    print(value);
+
+                    for (int check = 0; check <= contactList.length; check++) {
+                      contactList[check].isChecked = value;
+                      setState(() {});
+                      log(contactList[check].isChecked.toString());
+                    }
+                    // if (isVisible == true) {
+                    //   print("sjdjd");
+                    //   for (var i = 0; i < contactList.length; i++) {
+                    //     if (contactList[i].isChecked == true) {
+                    //       contactList[i].isChecked = false;
+                    //     }
+                    //   }
+
+                    //   for (var i = 0; i < contactList.length; i++) {
+                    //     if (contactList[i].isChecked == true) {
+                    //       contactList[i].isChecked = false;
+                    //       print("-------");
+                    //     } else if (contactList[i].isChecked == false) {
+                    //       contactList[i].isChecked = true;
+                    //       print("++++++${contactList[i].phonenumber}");
+                    //     }
+                    //   }
+                    // } else {
+                    //   isVisible = false;
+                    //   setState(() {
+                    //     for (var i = 0; i < contactList.length; i++) {
+                    //       contactList[i].isChecked = false;
+                    //       print("------${contactList[i].phonenumber}");
+                    //     }
+                    //     isVisible = true;
+                    //   });
+                    // }
+                  });
+                  // setState(() {
+                  //   isVisible = true;
+
+                  //   for (var i = 0; i < contactList.length; i++) {
+                  //     if (contactList[i].isChecked == true) {
+                  //       contactList[i].isChecked = false;
+                  //     }
+                  //   }
+
+                  //   for (var i = 0; i < contactList.length; i++) {
+                  //     if (contactList[i].isChecked == true) {
+                  //       contactList[i].isChecked = false;
+                  //       print("-------");
+                  //     } else if (contactList[i].isChecked == false) {
+                  //       contactList[i].isChecked = true;
+                  //       print("++++++${contactList[i].phonenumber}");
+                  //     }
+                  //   }
+                  //   isVisible = false;
+                  // });
+                  // AddButton == true || widget.hidegroupname != ''
+                  //     ? IconButton(
+                  //         onPressed: () {
+                  //           print(widget.hidegroupname != "");
+                  //           if (widget.hidegroupname != "") {
+                  //             print(testArray);
+                  //             testArray.forEach((user) {
+                  //               add_user_to_group(
+                  //                   groupusrname: groupusrname ?? "",
+                  //                   groupName: widget.hidegroupname ?? "",
+                  //                   groupKey: widget.groupKey ?? "",
+                  //                   grpuser: user['name'],
+                  //                   mobile: user['number']);
+                  //             });
+                  //           } else {
+                  //             CreateGroup();
+                  //           }
+                  //           // add_group();
+                  //         },
+                  //         icon: const Icon(
+                  //           Icons.add,
+                  //           size: 30,
+                  //         ))
+                  //     : Container(),
+                })
+          ],
+        ),
+        body: NewGroupContact(
+            profIcon: const Icon(Icons.person),
+            msgText: null,
+            contactName: null,
+            ntfctnCnt: null,
+            msgdte$tme: const SizedBox(),
+            ItmCnt: null,
+            controller: groupNameController,
+            onTap: () {}),
+        bottomSheet: widget.hidegroupname != ''
+            ? null
+            : Container(
+                // margin: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                    // color: Color.fromRGBO(1, 123, 255, 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white,
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                      ),
+                    ]),
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(80)),
+                  child: TextFormField(
+                    onChanged: ((value) {
+                      // print('()()()()()()()()()()$value');
+                      setState(() {
+                        if (value == '') {
+                          setState(() {
+                            AddButton = false;
+                          });
+                        } else {
+                          AddButton = true;
+                        }
+                      });
+                    }),
+                    controller: groupNameController,
+                    decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            width: 2,
+                            color: Color.fromRGBO(1, 123, 255, 1),
+                          ), //<-- SEE HERE
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            width: 2,
+                            color: Color.fromRGBO(1, 123, 255, 1),
+                          ), //<-- SEE HERE
+                        ),
+                        fillColor: Colors.white,
+                        filled: true,
+                        // suffixIcon: isVisible
+                        //     ? TextButton(
+                        //         onPressed: () {
+                        //           setState(() {
+                        //             isVisible = true;
+                        //             for (var i = 0;
+                        //                 i < contactList.length;
+                        //                 i++) {
+                        //               if (contactList[i].isChecked == true) {
+                        //                 contactList[i].isChecked = false;
+                        //               }
+                        //             }
+
+                        //             for (var i = 0;
+                        //                 i < contactList.length;
+                        //                 i++) {
+                        //               if (contactList[i].isChecked == true) {
+                        //                 contactList[i].isChecked = false;
+                        //                 print("-------");
+                        //               } else if (contactList[i].isChecked ==
+                        //                   false) {
+                        //                 contactList[i].isChecked = true;
+                        //                 print(
+                        //                     "++++++${contactList[i].phonenumber}");
+                        //               }
+                        //             }
+                        //             isVisible = false;
+                        //           });
+                        //         },
+                        //         child: const Padding(
+                        //           padding: EdgeInsets.symmetric(
+                        //               vertical: 10, horizontal: 10),
+                        //           child: Text(
+                        //             'Select all',
+                        //             style: TextStyle(
+                        //                 color: Colors.black,
+                        //                 fontWeight: FontWeight.w800),
+                        //           ),
+                        //         ),
+                        //       )
+                        //     : InkWell(
+                        //         onTap: () {
+                        //           setState(() {
+                        //             for (var i = 0;
+                        //                 i < contactList.length;
+                        //                 i++) {
+                        //               contactList[i].isChecked = false;
+                        //               print(
+                        //                   "------${contactList[i].phonenumber}");
+                        //             }
+                        //             isVisible = true;
+                        //           });
+                        //         },
+                        //         child: const Padding(
+                        //           padding: EdgeInsets.symmetric(
+                        //               horizontal: 20, vertical: 20),
+                        //           child: Text(
+                        //             'Unselect all',
+                        //             style: TextStyle(
+                        //                 color: Colors.black,
+                        //                 fontWeight: FontWeight.w800),
+                        //           ),
+                        //         ),
+                        //       ),
+                        hintText: 'Type a Group Name',
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 20)),
+                  ),
+                ),
+              ),
+        floatingActionButton: AddButton == true || widget.hidegroupname != ''
+            ? FloatingActionButton(
+                // isExtended: true,
+                child: Icon(Icons.add),
+                backgroundColor: Color.fromRGBO(1, 123, 255, 1),
+                onPressed: () {
+                  setState(() {
                     print(widget.hidegroupname != "");
                     if (widget.hidegroupname != "") {
                       print(testArray);
@@ -357,104 +584,10 @@ class _NewGroupState extends State<NewGroup> {
                     } else {
                       CreateGroup();
                     }
-                    // add_group();
-                  },
-                  icon: const Icon(
-                    Icons.add,
-                    size: 30,
-                  ))
-              : Container(),
-          const SizedBox(
-            width: 5,
-          )
-        ],
-      ),
-      body: NewGroupContact(
-          profIcon: const Icon(Icons.person),
-          msgText: null,
-          contactName: null,
-          ntfctnCnt: null,
-          msgdte$tme: const SizedBox(),
-          ItmCnt: null,
-          controller: groupNameController,
-          onTap: () {}),
-      bottomSheet: widget.hidegroupname != ''
-          ? null
-          : TextFormField(
-              onChanged: ((value) {
-                // print('()()()()()()()()()()$value');
-                setState(() {
-                  if (value == '') {
-                    setState(() {
-                      AddButton = false;
-                    });
-                  } else {
-                    AddButton = true;
-                  }
-                });
-              }),
-              controller: groupNameController,
-              decoration: InputDecoration(
-                  suffixIcon: isVisible
-                      ? TextButton(
-                          onPressed: () {
-                            setState(() {
-                              isVisible = true;
-                              for (var i = 0; i < contactList.length; i++) {
-                                if (contactList[i].isChecked == true) {
-                                  contactList[i].isChecked = false;
-                                }
-                              }
-
-                              for (var i = 0; i < contactList.length; i++) {
-                                if (contactList[i].isChecked == true) {
-                                  contactList[i].isChecked = false;
-                                  print("-------");
-                                } else if (contactList[i].isChecked == false) {
-                                  contactList[i].isChecked = true;
-                                  print("++++++${contactList[i].phonenumber}");
-                                }
-                              }
-                              isVisible = false;
-                            });
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
-                            child: Text(
-                              'Select all',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w800),
-                            ),
-                          ),
-                        )
-                      : InkWell(
-                          onTap: () {
-                            setState(() {
-                              for (var i = 0; i < contactList.length; i++) {
-                                contactList[i].isChecked = false;
-                                print("------${contactList[i].phonenumber}");
-                              }
-                              isVisible = true;
-                            });
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 20),
-                            child: Text(
-                              'Unselect all',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w800),
-                            ),
-                          ),
-                        ),
-                  hintText: 'Type a Group Name',
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
-            ),
-    );
+                  });
+                },
+              )
+            : Container());
   }
 }
 
@@ -523,7 +656,7 @@ class _NewGroupContactState extends State<NewGroupContact> {
           isChecked: false,
           phonenumber: jsonDecode(response.body)[i]['mobile']));
     }
-
+    filterContactList = contactList;
     setState(() {});
   }
 
@@ -538,11 +671,11 @@ class _NewGroupContactState extends State<NewGroupContact> {
             child: TextFormField(
                 controller: groupcontoller,
                 onChanged: (value) {
-                  if (mounted) {
-                    setState() => searchString = value.toLowerCase();
-                  }
-                  if (mounted) {
-                    setState() => searchString = value.toLowerCase();
+                  print(contactList[0].Name);
+                  filtercourse(value);
+                  if (filterContactList.isEmpty) {
+                    filterContactList = contactList;
+                    setState(() {});
                   }
                 },
                 decoration: const InputDecoration(
@@ -554,11 +687,12 @@ class _NewGroupContactState extends State<NewGroupContact> {
         ),
         Expanded(
           child: ListView.separated(
-              itemCount: contactList.length,
+              itemCount: filterContactList.length,
               itemBuilder: (BuildContext context, int index) {
-                final employee = contactList[index];
+                // contactList = filterContactList;
 
-                return contactList[index]
+                final employee = filterContactList[index];
+                return filterContactList[index]
                         .Name
                         .toString()
                         .toLowerCase()
@@ -566,11 +700,6 @@ class _NewGroupContactState extends State<NewGroupContact> {
                     ? CheckboxListTile(
                         controlAffinity: ListTileControlAffinity.trailing,
                         value: employee.isChecked,
-                        //         value:contactList[index].isChecked,
-                        //           onChanged: (val) {
-                        // contactList[index].isChecked = val!;
-                        // setState(() {});
-                        // },
                         onChanged: (val) {
                           setState(() {
                             print('------check--------${employee.isChecked}');
@@ -600,7 +729,7 @@ class _NewGroupContactState extends State<NewGroupContact> {
                             }
                           });
                         },
-                        title: Text(contactList[index].Name),
+                        title: Text(filterContactList[index].Name),
                         secondary: CircleAvatar(
                           child: ClipOval(
                             child: CachedNetworkImage(
@@ -617,14 +746,14 @@ class _NewGroupContactState extends State<NewGroupContact> {
                             ),
                           ),
                         ),
-                        subtitle: Text(contactList[index].jobProfile),
+                        subtitle: Text(filterContactList[index].jobProfile),
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 0),
                       )
                     : Container();
               },
               separatorBuilder: (BuildContext context, int index) {
-                return contactList[index]
+                return filterContactList[index]
                         .toString()
                         .toLowerCase()
                         .contains(searchString)
@@ -634,5 +763,12 @@ class _NewGroupContactState extends State<NewGroupContact> {
         ),
       ],
     );
+  }
+
+  void filtercourse(value) {
+    filterContactList = contactList
+        .where((o) => o.Name.toLowerCase().contains(value.toLowerCase()))
+        .toList();
+    setState(() {});
   }
 }

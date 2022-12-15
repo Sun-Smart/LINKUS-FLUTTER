@@ -4,7 +4,6 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:encrypt/encrypt.dart';
 import 'package:file_picker/file_picker.dart';
@@ -39,8 +38,10 @@ import '../attachmentWidgets/sendermsg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
-
 import 'fileView.dart';
+
+ScrollController scrollController = ScrollController();
+var isNoData = false;
 
 class PersonalChat extends StatefulWidget {
   var names;
@@ -78,7 +79,6 @@ class _PersonalChatState extends State<PersonalChat> {
 
   late IO.Socket socket;
   msgController chat = msgController();
-  ScrollController _scrollController = ScrollController();
   var chatMsg = [];
   var userLogged;
   var TimeStamp_date;
@@ -108,8 +108,8 @@ class _PersonalChatState extends State<PersonalChat> {
   FlutterSoundPlayer myPlayer = FlutterSoundPlayer();
   scrollToDown() {
     setState(() {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+      if (scrollController.hasClients) {
+        scrollController.animateTo(scrollController.position.maxScrollExtent,
             duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
       }
     });
@@ -194,6 +194,10 @@ class _PersonalChatState extends State<PersonalChat> {
     print("-----------$Data");
     if (Data != 'no data found') {
       jsonData = await json.decode(Data.toString());
+    } else {
+      // setState(() {
+      isNoData = true;
+      // });
     }
     //response.body.toString();
 
@@ -226,11 +230,15 @@ class _PersonalChatState extends State<PersonalChat> {
 
           // scrollToUp();
           chatLoading = true;
-          // _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          // scrollController.animateTo(scrollController.position.maxScrollExtent,
           //     duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
           scrollToDown();
         }
       } else {
+        setState(() {
+          isNoData = true;
+        });
+
         print("-------no data found---");
         Data = "no data found";
       }
@@ -242,7 +250,7 @@ class _PersonalChatState extends State<PersonalChat> {
     print("true or flse----------${load_data}");
   }
 
- OnRefresh(limit) async {
+  OnRefresh(limit) async {
     http.Response response = await http.post(Uri.parse(chat_history), body: {
       "limit": (limit + 10).toString(),
       "message_id": senderid,
@@ -259,7 +267,7 @@ class _PersonalChatState extends State<PersonalChat> {
       var data = jsonData[i]["message"];
       messageIdfromApi = jsonData[i]["message_id"];
       var a1 = data.runtimeType;
-      _scrollController.animateTo(0,
+      scrollController.animateTo(0,
           duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
       final k = encrypt.Key.fromUtf8('H4WtkvK4qyehIe2kjQfH7we1xIHFK67e');
       final iv = encrypt.IV.fromUtf8('HgNRbGHbDSz9T0CC');
@@ -275,7 +283,6 @@ class _PersonalChatState extends State<PersonalChat> {
       chatLoading = true;
     }
   }
-
 
   LoadSendMessage(
     chatMsg,
@@ -326,7 +333,7 @@ class _PersonalChatState extends State<PersonalChat> {
     };
 
     socket.emit('chatmessage', messageJson);
-    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
         duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
 
     sendMessagetoApi();
@@ -464,7 +471,7 @@ class _PersonalChatState extends State<PersonalChat> {
     };
 
     socket.emit('chatmessage', messageJson);
-    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
         duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
     sendMaptoApi();
     SendMaptoRecent();
@@ -671,7 +678,7 @@ class _PersonalChatState extends State<PersonalChat> {
     socket.emit('chatmessage', messageJson);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+      scrollController.animateTo(scrollController.position.maxScrollExtent,
           duration: Duration(milliseconds: 150), curve: Curves.easeInOut);
     });
     sendImagetoApi();
@@ -811,7 +818,7 @@ class _PersonalChatState extends State<PersonalChat> {
     socket.emit('chatmessage', messageJson);
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+      scrollController.animateTo(scrollController.position.maxScrollExtent,
           duration: Duration(milliseconds: 150), curve: Curves.easeInOut);
     });
     print("audioooooooooooooooooooooooooooooooooooooooooo$messageJson");
@@ -977,7 +984,7 @@ class _PersonalChatState extends State<PersonalChat> {
   @override
   Widget build(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+      scrollController.animateTo(scrollController.position.maxScrollExtent,
           duration: Duration(milliseconds: 150), curve: Curves.easeInOut);
     });
 
@@ -1233,7 +1240,7 @@ class _PersonalChatState extends State<PersonalChat> {
                               setState(() {
                                 widget.callback();
                               });
-
+                              isNoData = false;
                               Navigator.pop(
                                 context,
                               );
@@ -1321,8 +1328,7 @@ class _PersonalChatState extends State<PersonalChat> {
                               data: Theme.of(context).copyWith(
                                 dividerTheme: const DividerThemeData(
                                     color: Colors.black, thickness: 0.5),
-                                iconTheme:
-                                    const IconThemeData(color: Colors.white),
+                                iconTheme: IconThemeData(color: Colors.white),
                               ),
                               child: PopupMenuButton(
                                   color: const Color.fromRGBO(1, 123, 255, 1),
@@ -1625,6 +1631,7 @@ class _PersonalChatState extends State<PersonalChat> {
                     : AppBar(
                         leading: IconButton(
                             onPressed: () {
+                              isNoData = false;
                               Navigator.pop(context);
                             },
                             icon: Icon(
@@ -2031,6 +2038,8 @@ class _PersonalChatState extends State<PersonalChat> {
                             ),
                             fit: BoxFit.cover)),
                     child: Column(children: [
+                      // isNoData ? Text("data") : SizedBox(),
+
                       Expanded(
                           child: RefreshIndicator(
                         onRefresh: () {
@@ -2041,7 +2050,7 @@ class _PersonalChatState extends State<PersonalChat> {
                         child: ListView.builder(
                             // reverse: true,
                             scrollDirection: Axis.vertical,
-                            controller: _scrollController,
+                            controller: scrollController,
                             dragStartBehavior: DragStartBehavior.down,
                             shrinkWrap: false,
                             itemCount: chat.chatMessages.length + 1,
@@ -2049,9 +2058,31 @@ class _PersonalChatState extends State<PersonalChat> {
                               // var Date_Time = ConvertingTimeStamp((int.parse(
                               //     chat.chatMessages[index].senttime)));
                               if (responseStatusCode == 200) {
+                                if (index == 0) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 10),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color:
+                                              Color.fromARGB(245, 73, 158, 248),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      height: 40,
+                                      child: Center(
+                                          child: Text(
+                                        " End to End Encryptions",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                    ),
+                                  );
+                                }
                                 if (index == chat.chatMessages.length) {
                                   return Container(
-                                    height: 150,
+                                    height: emojiShowing ? 400 : 150,
                                   );
                                 }
                                 if (chat.chatMessages[index].fileType ==
@@ -2190,15 +2221,14 @@ class _PersonalChatState extends State<PersonalChat> {
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 300),
                                 child: Center(
-                                    child: chat.chatMessages.firstRebuild
+                                    child: isNoData
                                         ? CircularProgressIndicator()
-                                        : null),
+                                        : CircularProgressIndicator()),
                               );
                             }),
                       ))
                     ]))),
                 bottomSheet: ChatInputBox(
-                 
                   buddyname: widget.names ?? '',
                   onsent: onImageSend,
                   controller: chatController,
@@ -2209,8 +2239,8 @@ class _PersonalChatState extends State<PersonalChat> {
                     setState(() {});
                   },
                   onTap: () {
-                    _scrollController.animateTo(
-                        _scrollController.position.maxScrollExtent,
+                    scrollController.animateTo(
+                        scrollController.position.maxScrollExtent,
                         duration: Duration(milliseconds: 200),
                         curve: Curves.easeInOut);
 
@@ -2233,7 +2263,7 @@ class _PersonalChatState extends State<PersonalChat> {
 
   ConvertingTimeStamp(senttime) {
     final DateTime date = DateTime.fromMillisecondsSinceEpoch(senttime);
-    var format = DateFormat('hh:mm').format(date);
+    var format = DateFormat.Hm().format(date);
     //var formattedTime = format.format(date);
     print("aaaaaaaaaaaaaaaaaa-------$format");
     return format.toString();
@@ -2257,7 +2287,6 @@ class RecieverMessageItem extends StatefulWidget {
       required this.senttime})
       : super();
   final bool sentByMe;
-
   final String message;
   final String senttime;
   final String? path;
@@ -2329,5 +2358,6 @@ class _RecieverMessageItemState extends State<RecieverMessageItem> {
         ),
       ),
     );
+    //git
   }
 }

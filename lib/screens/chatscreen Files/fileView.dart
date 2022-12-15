@@ -70,7 +70,10 @@ class _fileViewSenderState extends State<fileViewSender> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Row(children: [
-                      const Icon(Icons.file_copy),
+                      const CircleAvatar(
+                        radius: 20,
+                        child: Icon(Icons.file_copy),
+                      ),
                       const SizedBox(
                         width: 10,
                       ),
@@ -88,7 +91,7 @@ class _fileViewSenderState extends State<fileViewSender> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(3.0),
+                        padding: const EdgeInsets.only(top: 10),
                         child: Text(
                           widget.pathoffile.split(".").last.toUpperCase(),
                           style: const TextStyle(
@@ -97,12 +100,15 @@ class _fileViewSenderState extends State<fileViewSender> {
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Text(
-                        widget.time,
-                        style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          widget.time,
+                          style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal),
+                        ),
                       ),
                     ],
                   ),
@@ -175,54 +181,66 @@ class _fileViewRecieverState extends State<fileViewReciever> {
             width: MediaQuery.of(context).size.width / 2,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10), color: Colors.green),
-            child: Stack(children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                height: 60,
-                child: Card(
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Row(children: [
-                      const Icon(Icons.file_copy),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      openFie(),
-                    ]),
-                  ),
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Text(
-                          widget.pathoffile.split(".").last.toUpperCase(),
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Text(
-                        widget.time,
-                        style: const TextStyle(
-                            fontSize: 12,
+            child: Stack(
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
+                  height: 60,
+                  child: Card(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(children: [
+                        const CircleAvatar(
+                          radius: 20,
+                          backgroundColor: Colors.green,
+                          child: Icon(
+                            Icons.file_copy,
                             color: Colors.white,
-                            fontWeight: FontWeight.normal),
-                      ),
-                    ],
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        openFie(),
+                      ]),
+                    ),
                   ),
                 ),
-              )
-            ]),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            widget.pathoffile.split(".").last.toUpperCase(),
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            widget.time,
+                            style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                                fontWeight: FontWeight.normal),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

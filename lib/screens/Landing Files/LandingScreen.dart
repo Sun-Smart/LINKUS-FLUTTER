@@ -14,10 +14,10 @@ import 'package:linkus/screens/mainmenu/shelf/shelf.dart';
 import 'package:linkus/screens/mainmenu/starredscreen/starred.dart';
 import 'package:linkus/screens/mainmenu/task/mytask.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../variables/Api_Control.dart';
-import '../birthday/birthday_page.dart';
-import '../change Password/change_password.dart';
-import '../profile/my_profile.dart';
+import 'package:linkus/variables/Api_Control.dart';
+import 'package:linkus/screens/birthday/birthday_page.dart';
+import 'package:linkus/screens/change%20Password/change_password.dart';
+import 'package:linkus/screens/profile/my_profile.dart';
 import 'contactTab.dart';
 import 'groupTab.dart';
 import 'recentTab.dart';
@@ -59,7 +59,11 @@ class _landingPageState extends State<landingPage> {
   bool profImg = true;
   @override
   void initState() {
-    apiData();
+    setState(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) => apiData());
+      super.initState();
+    });
+
     // WidgetsBinding.instance.addPostFrameCallback((_) => apiData());
 
     super.initState();
@@ -103,7 +107,9 @@ class _landingPageState extends State<landingPage> {
                                   context,
                                   MaterialPageRoute<dynamic>(
                                     builder: (BuildContext context) =>
-                                        ProfilePage(),
+                                        ProfilePage(
+                                      apidata: apiData,
+                                    ),
                                   ),
                                   (route) => true,
                                   //if you want to disable back feature set to false
@@ -115,7 +121,7 @@ class _landingPageState extends State<landingPage> {
                                   ? ClipOval(
                                       child: CachedNetworkImage(
                                         fit: BoxFit.cover,
-                                        imageUrl: profileImg,
+                                        imageUrl: profileImg ?? "",
                                         progressIndicatorBuilder: (context, url,
                                                 downloadProgress) =>
                                             CircularProgressIndicator(
@@ -140,9 +146,7 @@ class _landingPageState extends State<landingPage> {
                                     ),
                             ),
                           ),
-                          title: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          title: Row(
                             children: [
                               username != null
                                   ? Text(
@@ -157,16 +161,6 @@ class _landingPageState extends State<landingPage> {
                               SizedBox(
                                 height: 5,
                               ),
-                              designation != null
-                                  ? Text(
-                                      designation.toString(),
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.normal),
-                                    )
-                                  : Container(
-                                      child: Text('Loading...'),
-                                    ),
                             ],
                           ),
                           actions: [
@@ -203,7 +197,9 @@ class _landingPageState extends State<landingPage> {
                                                           dynamic>(
                                                         builder: (BuildContext
                                                                 context) =>
-                                                            ProfilePage(),
+                                                            ProfilePage(
+                                                          apidata: apiData,
+                                                        ),
                                                       ),
                                                       (route) => true,
                                                       //if you want to disable back feature set to false

@@ -26,6 +26,8 @@ class _GroupMemberListState extends State<GroupMemberList> {
   var mobile = [];
   var Loginuser;
   var admin = [];
+  var adminnumber = [];
+  var number = [];
 
   @override
   void initState() {
@@ -50,7 +52,8 @@ class _GroupMemberListState extends State<GroupMemberList> {
     photo.clear();
     mobile.clear();
     role.clear();
-   
+    adminnumber.clear();
+    number.clear();
 
     groupmemblist = json.decode(response.body);
 
@@ -62,6 +65,9 @@ class _GroupMemberListState extends State<GroupMemberList> {
           photo.add(user["photourl"].toString()),
           role.add(user["designation"]),
           mobile.add(user["uid"].toString()),
+          adminnumber.add(user["owner"] != "undefined"),
+          print("----number-----${adminnumber}"),
+
           // }else{
           // name.add(user['username'].toString()),
           //   photo.add(user["photourl"].toString()),
@@ -73,6 +79,12 @@ class _GroupMemberListState extends State<GroupMemberList> {
           // print("------------owner--------${owner.toString()}");
           // print("---------${mobile[i]},sunsmart${Loginuser}");
         });
+    for (var i = 0; i < adminnumber.length; i++) {
+      if (adminnumber[i] == true) {
+        number.add(adminnumber[i]);
+      }
+    }
+    print("-----print-------${number.length}");
 
     setState(() {});
   }
@@ -140,6 +152,114 @@ class _GroupMemberListState extends State<GroupMemberList> {
     print("---------Response-------${response.body}");
   }
 
+  remove_groupadmin({required String Groupkey, required String mobile}) async {
+    showDialog(
+        context: context,
+        builder: (bc) {
+          return Dialog(
+            backgroundColor: Colors.transparent,
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        });
+    Map data = {
+      "groupkey": Groupkey.toString(),
+      "uid": mobile.toString(),
+      "owner": "undefined"
+    };
+    print("-------------${data}");
+
+    http.Response response =
+        await http.post(Uri.parse(removegroupadmin), body: data);
+    print("printtttttttt${response.body}");
+    if (response.statusCode == 200) {
+      Future.delayed(Duration(seconds: 1)).then((value) {
+        Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                  content: const Text(
+                    "Removed Successfully",
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                  actions: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: InkWell(
+                        child: Text(
+                          "OK",
+                          style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    )
+                  ]);
+            });
+      });
+    } else {
+      print("-----------Wrong----------");
+    }
+
+    grpmember();
+    setState(() {});
+    print("---------Data-------${data}");
+    print("---------Response-------${response.body}");
+  }
+
+  showAlertDialog(BuildContext context) {
+    // Create button
+
+    // Create AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: InkWell(
+        child: Row(
+          //  mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              "Make anyone from the group as \n group admin",
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
+          ],
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+      actions: [
+        TextButton(
+          child: Text(
+            "Ok",
+            style: TextStyle(fontSize: 20, color: Colors.black),
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,7 +270,7 @@ class _GroupMemberListState extends State<GroupMemberList> {
             future: Future.delayed(const Duration(seconds: 3)),
             builder: ((context, snapshot) {
               return groupmemblist.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(),
                     )
                   : Column(children: [
@@ -159,8 +279,37 @@ class _GroupMemberListState extends State<GroupMemberList> {
                             itemCount: groupmemblist.length,
                             itemBuilder: (BuildContext context, int index) {
                               return ListTile(
-                                  title: Text(name[index].toString(),
-                                      style: TextStyle(color: Colors.black)),
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(name[index].toString(),
+                                          style:
+                                              TextStyle(color: Colors.black)),
+                                      (groupmemblist[index]["owner"] ==
+                                              "undefined")
+                                          ? InkWell(
+                                              onTap: () {
+                                                group_admin(
+                                                    Groupkey: widget.grpkey
+                                                        .toString(),
+                                                    mobile: mobile[index]
+                                                        .toString());
+                                              },
+                                              child: const Text(
+                                                "Make Group Admin",
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Colors.grey),
+                                              ),
+                                            )
+                                          : Text(
+                                              "Group Admin",
+                                              style: TextStyle(
+                                                  color: Colors.green),
+                                            )
+                                    ],
+                                  ),
                                   //
                                   subtitle: Row(
                                     mainAxisAlignment:
@@ -169,18 +318,30 @@ class _GroupMemberListState extends State<GroupMemberList> {
                                       Text(role[index].toString()),
                                       (groupmemblist[index]["owner"] !=
                                               "undefined")
-                                          ? const Text(
-                                              "Group Admin",
-                                              style: TextStyle(
-                                                  color: Colors.green),
+                                          // ? Text(
+                                          //   "Group Admin",
+                                          //   style: TextStyle(
+                                          //       color: Colors.green),
+                                          // )
+
+                                          // : (groupmemblist[index]["owner"] ==
+                                          //         'undefined')
+                                          ? InkWell(
+                                              child: Icon(
+                                                Icons.cancel,
+                                                color: Colors.red,
+                                              ),
+                                              onTap: () {
+                                                number.length > 1
+                                                    ? remove_groupadmin(
+                                                        Groupkey: widget.grpkey
+                                                            .toString(),
+                                                        mobile: mobile[index]
+                                                            .toString())
+                                                    : showAlertDialog(context);
+                                              },
                                             )
-                                          : (groupmemblist[index]["owner"] ==
-                                                  'undefined')
-                                              ? const Icon(
-                                                  Icons.cancel,
-                                                  color: Colors.red,
-                                                )
-                                              : Container(),
+                                          : Container(),
                                     ],
                                   ),
                                   leading: InkWell(
@@ -203,122 +364,122 @@ class _GroupMemberListState extends State<GroupMemberList> {
                                       ),
                                     ),
                                     onTap: () {
-                                      (groupmemblist[index]["owner"] ==
-                                              "undefined")
-                                          ? showModalBottomSheet<void>(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return Container(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height /
-                                                      5.5,
-                                                  color: Colors.blueAccent,
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 20,
-                                                          vertical: 25),
-                                                      child: Column(
-                                                        children: <Widget>[
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            children: const [
-                                                              Text(
-                                                                "My Options",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        18,
-                                                                    color: Colors
-                                                                        .white),
-                                                              )
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 10,
-                                                          ),
-                                                          InkWell(
-                                                              child: Row(
-                                                                children: const [
-                                                                  Icon(
-                                                                    Icons
-                                                                        .person_add,
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                  SizedBox(
-                                                                    width: 10,
-                                                                  ),
-                                                                  Text(
-                                                                    'Make Group Admin',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      fontSize:
-                                                                          18,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              onTap: () {
-                                                                group_admin(
-                                                                    Groupkey: widget
-                                                                        .grpkey
-                                                                        .toString(),
-                                                                    mobile: mobile[
-                                                                            index]
-                                                                        .toString());
+                                      // (groupmemblist[index]["owner"] ==
+                                      //         "undefined")
+                                      //     ? showModalBottomSheet<void>(
+                                      //         context: context,
+                                      //         builder: (BuildContext context) {
+                                      //           return Container(
+                                      //             height: MediaQuery.of(context)
+                                      //                     .size
+                                      //                     .height /
+                                      //                 5.5,
+                                      //             color: Colors.blueAccent,
+                                      //             child: Center(
+                                      //               child: Padding(
+                                      //                 padding: const EdgeInsets
+                                      //                         .symmetric(
+                                      //                     horizontal: 20,
+                                      //                     vertical: 25),
+                                      //                 child: Column(
+                                      //                   children: <Widget>[
+                                      //                     Row(
+                                      //                       mainAxisAlignment:
+                                      //                           MainAxisAlignment
+                                      //                               .center,
+                                      //                       children: const [
+                                      //                         Text(
+                                      //                           "My Options",
+                                      //                           style: TextStyle(
+                                      //                               fontSize:
+                                      //                                   18,
+                                      //                               color: Colors
+                                      //                                   .white),
+                                      //                         )
+                                      //                       ],
+                                      //                     ),
+                                      //                     const SizedBox(
+                                      //                       height: 10,
+                                      //                     ),
+                                      //                     InkWell(
+                                      //                         child: Row(
+                                      //                           children: const [
+                                      //                             Icon(
+                                      //                               Icons
+                                      //                                   .person_add,
+                                      //                               color: Colors
+                                      //                                   .white,
+                                      //                             ),
+                                      //                             SizedBox(
+                                      //                               width: 10,
+                                      //                             ),
+                                      //                             Text(
+                                      //                               'Make Group Admin',
+                                      //                               style:
+                                      //                                   TextStyle(
+                                      //                                 color: Colors
+                                      //                                     .white,
+                                      //                                 fontSize:
+                                      //                                     18,
+                                      //                               ),
+                                      //                             ),
+                                      //                           ],
+                                      //                         ),
+                                      //                         onTap: () {
+                                      //                           group_admin(
+                                      //                               Groupkey: widget
+                                      //                                   .grpkey
+                                      //                                   .toString(),
+                                      //                               mobile: mobile[
+                                      //                                       index]
+                                      //                                   .toString());
 
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
+                                      //                           Navigator.of(
+                                      //                                   context)
+                                      //                               .pop();
 
-                                                                print(
-                                                                    "---------${widget.grpkey.toString()},${mobile[index].toString()}");
-                                                              }),
-                                                          const Divider(
-                                                            color: Colors.white,
-                                                            thickness: 1,
-                                                          ),
-                                                          InkWell(
-                                                            child: Row(
-                                                              children: const [
-                                                                Icon(
-                                                                  Icons.close,
-                                                                  color: Colors
-                                                                      .red,
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 10,
-                                                                ),
-                                                                Text(
-                                                                  'Cancel',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .red,
-                                                                    fontSize:
-                                                                        18,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            onTap: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              })
-                                          : null;
+                                      //                           print(
+                                      //                               "---------${widget.grpkey.toString()},${mobile[index].toString()}");
+                                      //                         }),
+                                      //                     const Divider(
+                                      //                       color: Colors.white,
+                                      //                       thickness: 1,
+                                      //                     ),
+                                      //                     InkWell(
+                                      //                       child: Row(
+                                      //                         children: const [
+                                      //                           Icon(
+                                      //                             Icons.close,
+                                      //                             color: Colors
+                                      //                                 .red,
+                                      //                           ),
+                                      //                           SizedBox(
+                                      //                             width: 10,
+                                      //                           ),
+                                      //                           Text(
+                                      //                             'Cancel',
+                                      //                             style:
+                                      //                                 TextStyle(
+                                      //                               color: Colors
+                                      //                                   .red,
+                                      //                               fontSize:
+                                      //                                   18,
+                                      //                             ),
+                                      //                           ),
+                                      //                         ],
+                                      //                       ),
+                                      //                       onTap: () {
+                                      //                         Navigator.pop(
+                                      //                             context);
+                                      //                       },
+                                      //                     )
+                                      //                   ],
+                                      //                 ),
+                                      //               ),
+                                      //             ),
+                                      //           );
+                                      //         })
+                                      //     : null;
                                     },
                                   ));
                             },
