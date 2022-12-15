@@ -48,7 +48,9 @@ class _GroupOwnCardState extends State<GroupOwnCard> {
                   child: Card(
                       child: Image.network(
                     'https://prod.herbie.ai:8153/uploadFiles/${widget.path}',
-                    loadingBuilder: (BuildContext context, Widget child,
+                    loadingBuilder: (BuildContext context,
+                        Widget child,
+                        //ss
                         ImageChunkEvent? loadingProgress) {
                       if (loadingProgress == null) return child;
                       return Center(
