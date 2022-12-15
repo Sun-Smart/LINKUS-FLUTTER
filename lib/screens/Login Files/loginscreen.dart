@@ -321,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   // ignore: prefer_const_literals_to_create_immutables
                   children: [
-                    const Text("enchat.io",
+                    const Text("LinkUs",
                         style: TextStyle(
                             fontSize: 50,
                             fontWeight: FontWeight.w900,

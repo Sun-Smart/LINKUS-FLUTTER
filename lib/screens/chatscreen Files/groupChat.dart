@@ -91,6 +91,7 @@ class _groupChatState extends State<groupChat> {
   String? memberslength;
   var groupmemblist = [];
   var formattedTime;
+  var nodatafond;
   FlutterSoundPlayer myPlayer = FlutterSoundPlayer();
   scrollToDown() {
     setState(() {
@@ -158,9 +159,18 @@ class _groupChatState extends State<groupChat> {
       "Accept": "application/json",
       "charset": "utf-8"
     });
+    if (response.body == 'no data found') {
+      setState(() {
+        nodatafond = response.body;
+      });
+    }
 
+    print("________________suresh nodata fond____________${nodatafond}");
+    print("________________suresh value____________${response.body}");
     var jsonData = await jsonDecode(response.body);
-    print("____________________________${jsonData.length}");
+    responseStatusCode = response.statusCode;
+
+    print("________________suresh value2____________${jsonData}");
 
     for (var i = jsonData.length - 1; i >= 0; i--) {
       var data = jsonData[i]["message"];
@@ -289,6 +299,8 @@ class _groupChatState extends State<groupChat> {
     _scrollController.animateTo(_scrollController.position.maxScrollExtent,
         duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
     sendMessagetoApi();
+
+    print('------------user- suresh 1234567---------------------');
   }
 
   decrypted(value) {
@@ -1435,6 +1447,9 @@ class _groupChatState extends State<groupChat> {
                             ),
                             fit: BoxFit.cover)),
                     child: Column(children: [
+                      GroupChat.GroupMessage.length == 1
+                          ? Text(GroupChat.GroupMessage.length.toString())
+                          : Container(),
                       Expanded(
                           child: RefreshIndicator(
                         onRefresh: () {
@@ -1443,181 +1458,213 @@ class _groupChatState extends State<groupChat> {
 
                           return OnRefresh(updatingScroll);
                         },
-                        child: ListView.builder(
-                            // reverse: true,
-                            scrollDirection: Axis.vertical,
-                            controller: _scrollController,
-                            dragStartBehavior: DragStartBehavior.down,
-                            shrinkWrap: false,
-                            itemCount: GroupChat.GroupMessage.length + 1,
-                            itemBuilder: (context, index) {
-                              // print(
-                              //     ":::::::::::::::::::::::::::::::::::::::${GroupChat.GroupMessage[index].replyerName}");
-                              // var Date_Time = ConvertingTimeStamp((int.parse(
-                              //     GroupChat.GroupMessage[index].senttime)));
-                              if (responseStatusCode == 200) {
-                                if (index == GroupChat.GroupMessage.length) {
-                                  return Container(
-                                    height: 110,
-                                  );
-                                }
-                                if (GroupChat.GroupMessage[index].fileType ==
-                                        "map" ||
-                                    decrypted(GroupChat
-                                            .GroupMessage[index].message)
-                                        .toString()
-                                        .startsWith("LatLng")) {
+                        child: nodatafond == null
+                            ? ListView.builder(
+                                // reverse: true,
+                                scrollDirection: Axis.vertical,
+                                controller: _scrollController,
+                                dragStartBehavior: DragStartBehavior.down,
+                                shrinkWrap: false,
+                                itemCount: GroupChat.GroupMessage.length + 1,
+                                itemBuilder: (context, index) {
+                                  // print(
+                                  //     ":::::::::::::::::::::::::::::::::::::::${GroupChat.GroupMessage[index].replyerName}");
+                                  // var Date_Time = ConvertingTimeStamp((int.parse(
+                                  //     GroupChat.GroupMessage[index].senttime)));
                                   print(
-                                      "######### MAP ###############################################################");
-                                  if (GroupChat.GroupMessage[index].sndrMsgId ==
-                                      widget.mobileNumber) {
-                                    return GroupOwnLocationCard(
-                                      path: decrypted(
-                                        GroupChat.GroupMessage[index].path,
-                                      ),
-                                      time: GroupChat
-                                          .GroupMessage[index].senttime,
-                                    );
-                                  } else if (GroupChat
-                                          .GroupMessage[index].sndrMsgId !=
-                                      widget.mobileNumber) {
-                                    return GroupReplyLocationCard(
-                                      recieverName: GroupChat
-                                          .GroupMessage[index].replyerName,
-                                      path: decrypted(
-                                        GroupChat.GroupMessage[index].path,
-                                      ),
-                                      time: GroupChat
-                                          .GroupMessage[index].senttime,
-                                    );
-                                  }
-                                  return Container();
-                                } else if ((GroupChat
-                                        .GroupMessage[index].fileType ==
-                                    "text")) {
-                                  if (GroupChat.GroupMessage[index].sndrMsgId ==
-                                      widget.mobileNumber) {
-                                    return GroupSenderMessageItem(
-                                      message: decrypted(
-                                        GroupChat.GroupMessage[index].message,
-                                      ),
-                                      senttime: GroupChat
-                                          .GroupMessage[index].senttime,
-                                      sentByMe: GroupChat
-                                              .GroupMessage[index].sentByMe ==
-                                          socket.id,
-                                      sndBy: widget.buddyId,
-                                      MobileNumber:
-                                          widget.mobileNumber.toString(),
-                                    );
-                                  } else if (GroupChat
-                                          .GroupMessage[index].sndrMsgId !=
-                                      widget.mobileNumber) {
-                                    return GroupReciverMessageItem(
-                                        recieverName: GroupChat
-                                            .GroupMessage[index].replyerName,
-                                        message: decrypted(
-                                          GroupChat.GroupMessage[index].message,
-                                        ),
-                                        senttime: GroupChat
-                                            .GroupMessage[index].senttime
-                                            .toString(),
-                                        sentByMe: GroupChat
-                                                .GroupMessage[index].sentByMe ==
-                                            socket.id);
-                                  }
-                                  return Container();
-                                } else if ((GroupChat
-                                        .GroupMessage[index].fileType ==
-                                    "image")) {
-                                  if (GroupChat.GroupMessage[index].sndrMsgId ==
-                                      widget.mobileNumber) {
-                                    return GroupOwnCard(
-                                      path: decrypted((GroupChat
-                                              .GroupMessage[index].message))
-                                          .toString(),
-                                      sentByMe: true,
-                                      time: GroupChat
-                                          .GroupMessage[index].senttime
-                                          .toString(),
-                                    );
-                                  } else if (GroupChat
-                                          .GroupMessage[index].sndrMsgId !=
-                                      widget.mobileNumber) {
-                                    return GroupReplyFileCard(
-                                      recieverName: GroupChat
-                                          .GroupMessage[index].replyerName,
-                                      path: decrypted(
-                                        GroupChat.GroupMessage[index].message,
-                                      ).toString(),
-                                      time: GroupChat
-                                          .GroupMessage[index].senttime
-                                          .toString(),
-                                    );
-                                  }
-                                } else if (GroupChat
-                                        .GroupMessage[index].fileType ==
-                                    "Docs") {
-                                  if (GroupChat.GroupMessage[index].sndrMsgId ==
-                                      widget.mobileNumber) {
-                                    if (decrypted(
-                                            GroupChat.GroupMessage[index].path)
-                                        .endsWith(".mp4")) {
-                                      return GroupOwnVoiceCard(
-                                        path: decrypted(
-                                          GroupChat.GroupMessage[index].path,
-                                        ),
-                                        time: GroupChat
-                                            .GroupMessage[index].senttime,
+                                      '+++++++++++++++++++++++++++++++++++++1223+++++++++');
+                                  print(GroupChat.GroupMessage.length);
+                                  print(
+                                      '+++++++++++++++++++++++++++++++++++++1223+++++++++');
+
+                                  if (responseStatusCode == 200) {
+                                    if (index ==
+                                        GroupChat.GroupMessage.length) {
+                                      return Container(
+                                        height: 110,
                                       );
                                     }
-                                    return GroupfileViewSender(
-                                        pathoffile: decrypted(GroupChat
-                                            .GroupMessage[index].message
-                                            .toString()),
-                                        time: GroupChat
-                                            .GroupMessage[index].senttime,
-                                        OnDocssend: onDocsSend);
-                                  } else if (GroupChat
-                                          .GroupMessage[index].sndrMsgId !=
-                                      widget.mobileNumber) {
-                                    if (decrypted(
-                                            GroupChat.GroupMessage[index].path)
-                                        .endsWith(".mp4")) {
-                                      return GroupReplyVoiceCard(
-                                        recieverName: GroupChat
-                                            .GroupMessage[index].replyerName,
-                                        path: decrypted(
-                                            GroupChat.GroupMessage[index].path),
-                                        time: GroupChat
-                                            .GroupMessage[index].senttime,
-                                      );
-                                    }
-                                    return GroupfileViewReciever(
-                                        recieverName: GroupChat
-                                            .GroupMessage[index].replyerName,
-                                        pathoffile: decrypted(GroupChat
+
+                                    if (GroupChat
+                                                .GroupMessage[index].fileType ==
+                                            "map" ||
+                                        decrypted(GroupChat
                                                 .GroupMessage[index].message)
-                                            .toString(),
-                                        time: GroupChat
-                                            .GroupMessage[index].senttime,
-                                        OnDocssend: onDocsSend);
+                                            .toString()
+                                            .startsWith("LatLng")) {
+                                      print(
+                                          "######### MAP ###############################################################");
+                                      if (GroupChat
+                                              .GroupMessage[index].sndrMsgId ==
+                                          widget.mobileNumber) {
+                                        return GroupOwnLocationCard(
+                                          path: decrypted(
+                                            GroupChat.GroupMessage[index].path,
+                                          ),
+                                          time: GroupChat
+                                              .GroupMessage[index].senttime,
+                                        );
+                                      } else if (GroupChat
+                                              .GroupMessage[index].sndrMsgId !=
+                                          widget.mobileNumber) {
+                                        return GroupReplyLocationCard(
+                                          recieverName: GroupChat
+                                              .GroupMessage[index].replyerName,
+                                          path: decrypted(
+                                            GroupChat.GroupMessage[index].path,
+                                          ),
+                                          time: GroupChat
+                                              .GroupMessage[index].senttime,
+                                        );
+                                      }
+                                      return Container();
+                                    } else if ((GroupChat
+                                            .GroupMessage[index].fileType ==
+                                        "text")) {
+                                      if (GroupChat
+                                              .GroupMessage[index].sndrMsgId ==
+                                          widget.mobileNumber) {
+                                        return GroupSenderMessageItem(
+                                          message: decrypted(
+                                            GroupChat
+                                                .GroupMessage[index].message,
+                                          ),
+                                          senttime: GroupChat
+                                              .GroupMessage[index].senttime,
+                                          sentByMe: GroupChat
+                                                  .GroupMessage[index]
+                                                  .sentByMe ==
+                                              socket.id,
+                                          sndBy: widget.buddyId,
+                                          MobileNumber:
+                                              widget.mobileNumber.toString(),
+                                        );
+                                      } else if (GroupChat
+                                              .GroupMessage[index].sndrMsgId !=
+                                          widget.mobileNumber) {
+                                        return GroupReciverMessageItem(
+                                            recieverName: GroupChat
+                                                .GroupMessage[index]
+                                                .replyerName,
+                                            message: decrypted(
+                                              GroupChat
+                                                  .GroupMessage[index].message,
+                                            ),
+                                            senttime: GroupChat
+                                                .GroupMessage[index].senttime
+                                                .toString(),
+                                            sentByMe: GroupChat
+                                                    .GroupMessage[index]
+                                                    .sentByMe ==
+                                                socket.id);
+                                      }
+                                      return Container();
+                                    } else if ((GroupChat
+                                            .GroupMessage[index].fileType ==
+                                        "image")) {
+                                      if (GroupChat
+                                              .GroupMessage[index].sndrMsgId ==
+                                          widget.mobileNumber) {
+                                        return GroupOwnCard(
+                                          path: decrypted((GroupChat
+                                                  .GroupMessage[index].message))
+                                              .toString(),
+                                          sentByMe: true,
+                                          time: GroupChat
+                                              .GroupMessage[index].senttime
+                                              .toString(),
+                                        );
+                                      } else if (GroupChat
+                                              .GroupMessage[index].sndrMsgId !=
+                                          widget.mobileNumber) {
+                                        return GroupReplyFileCard(
+                                          recieverName: GroupChat
+                                              .GroupMessage[index].replyerName,
+                                          path: decrypted(
+                                            GroupChat
+                                                .GroupMessage[index].message,
+                                          ).toString(),
+                                          time: GroupChat
+                                              .GroupMessage[index].senttime
+                                              .toString(),
+                                        );
+                                      }
+                                    } else if (GroupChat
+                                            .GroupMessage[index].fileType ==
+                                        "Docs") {
+                                      if (GroupChat
+                                              .GroupMessage[index].sndrMsgId ==
+                                          widget.mobileNumber) {
+                                        if (decrypted(GroupChat
+                                                .GroupMessage[index].path)
+                                            .endsWith(".mp4")) {
+                                          return GroupOwnVoiceCard(
+                                            path: decrypted(
+                                              GroupChat
+                                                  .GroupMessage[index].path,
+                                            ),
+                                            time: GroupChat
+                                                .GroupMessage[index].senttime,
+                                          );
+                                        }
+                                        return GroupfileViewSender(
+                                            pathoffile: decrypted(GroupChat
+                                                .GroupMessage[index].message
+                                                .toString()),
+                                            time: GroupChat
+                                                .GroupMessage[index].senttime,
+                                            OnDocssend: onDocsSend);
+                                      } else if (GroupChat
+                                              .GroupMessage[index].sndrMsgId !=
+                                          widget.mobileNumber) {
+                                        if (decrypted(GroupChat
+                                                .GroupMessage[index].path)
+                                            .endsWith(".mp4")) {
+                                          return GroupReplyVoiceCard(
+                                            recieverName: GroupChat
+                                                .GroupMessage[index]
+                                                .replyerName,
+                                            path: decrypted(GroupChat
+                                                .GroupMessage[index].path),
+                                            time: GroupChat
+                                                .GroupMessage[index].senttime,
+                                          );
+                                        }
+                                        return GroupfileViewReciever(
+                                            recieverName: GroupChat
+                                                .GroupMessage[index]
+                                                .replyerName,
+                                            pathoffile: decrypted(GroupChat
+                                                    .GroupMessage[index]
+                                                    .message)
+                                                .toString(),
+                                            time: GroupChat
+                                                .GroupMessage[index].senttime,
+                                            OnDocssend: onDocsSend);
+                                      }
+                                    }
+                                    return Container();
                                   }
-                                }
-                                return Container();
-                              }
-                              return Padding(
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 300),
+                                    child: Center(
+                                        child: GroupChat.GroupMessage != null
+                                            ? CircularProgressIndicator()
+                                            : Container(
+                                                child: Text(
+                                                    "Your conversation goes here"),
+                                              )),
+                                  );
+                                })
+                            : Padding(
                                 padding:
                                     const EdgeInsets.symmetric(vertical: 300),
                                 child: Center(
-                                    child: GroupChat.GroupMessage != null
-                                        ? CircularProgressIndicator()
-                                        : Container(
-                                            child: Text(
-                                                "Your conversation goes here"),
-                                          )),
-                              );
-                            }),
+                                    child: Container(
+                                  child: Text("Your conversation goes here"),
+                                )),
+                              ),
                       ))
                     ]))),
                 bottomSheet: ChatInputBox(

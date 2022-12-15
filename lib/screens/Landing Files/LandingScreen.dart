@@ -65,8 +65,7 @@ class _landingPageState extends State<landingPage> {
     super.initState();
   }
 
-  updateStatus(
-      String loginnumber, status, last_changed, deviceid) async {
+  updateStatus(String loginnumber, status, last_changed, deviceid) async {
     print("ssssssssssssssssssssssssss");
     var data = {
       "mobile": loginnumber.toString(),
@@ -147,7 +146,7 @@ class _landingPageState extends State<landingPage> {
                             children: [
                               username != null
                                   ? Text(
-                                      username??"".toString(),
+                                      username ?? "".toString(),
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.normal),
@@ -497,8 +496,6 @@ class _landingPageState extends State<landingPage> {
                                                   ),
                                                   height: 0,
                                                   onTap: () {
-                                                    
-
                                                     Navigator.pop(context);
 
                                                     showDialog<String>(
@@ -512,14 +509,17 @@ class _landingPageState extends State<landingPage> {
                                                             child: AlertDialog(
                                                               title: const Text(
                                                                 'Are you sure to Logout?',
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
                                                                 style: TextStyle(
                                                                     color: Colors
-                                                                        .black45,
+                                                                        .black,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w500,
                                                                     fontSize:
-                                                                        15),
+                                                                        18),
                                                               ),
                                                               actions: <Widget>[
                                                                 InkWell(
@@ -534,9 +534,9 @@ class _landingPageState extends State<landingPage> {
                                                                     decoration: BoxDecoration(
                                                                         color: Color.fromARGB(
                                                                             255,
-                                                                            124,
-                                                                            123,
-                                                                            123),
+                                                                            231,
+                                                                            59,
+                                                                            59),
                                                                         borderRadius:
                                                                             BorderRadius.circular(10)),
                                                                     child:
@@ -555,14 +555,15 @@ class _landingPageState extends State<landingPage> {
                                                                 ),
                                                                 InkWell(
                                                                   onTap: () {
-                                                                    setState(() {
-                                                      updateStatus(
-                                                          mobileNumber,
-                                                          "offline",
-                                                          DateTime.now()
-                                                              .millisecondsSinceEpoch,
-                                                          "0");
-                                                    });
+                                                                    setState(
+                                                                        () {
+                                                                      updateStatus(
+                                                                          mobileNumber,
+                                                                          "offline",
+                                                                          DateTime.now()
+                                                                              .millisecondsSinceEpoch,
+                                                                          "0");
+                                                                    });
                                                                     Navigator
                                                                         .pushAndRemoveUntil<
                                                                             dynamic>(
@@ -585,9 +586,9 @@ class _landingPageState extends State<landingPage> {
                                                                     decoration: BoxDecoration(
                                                                         color: Color.fromARGB(
                                                                             255,
-                                                                            124,
-                                                                            123,
-                                                                            123),
+                                                                            4,
+                                                                            178,
+                                                                            73),
                                                                         borderRadius:
                                                                             BorderRadius.circular(10)),
                                                                     child:
@@ -637,8 +638,11 @@ class _landingPageState extends State<landingPage> {
                           ])),
                       body: TabBarView(
                         children: [
-                          Tab(icon: recentTab(name: username.toString(),
-                         ),),
+                          Tab(
+                            icon: recentTab(
+                              name: username.toString(),
+                            ),
+                          ),
                           Tab(
                               icon: contactsTab(
                                   mobileNumber: mobileNumber.toString())),

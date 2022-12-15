@@ -64,9 +64,8 @@ class _ChatListState extends State<ChatList> {
   var loader;
   @override
   void initState() {
-    
-      LoadData();
-    
+    LoadData();
+
     if (usernames.isEmpty) {
       setState(() {
         noData = true;
@@ -170,7 +169,8 @@ class _ChatListState extends State<ChatList> {
         if (Data[i]['filetype'] == 'text') {
           print("text");
           recentchatmsg.add(Data[i]['message']);
-          print("555551111111111111111texttttttt111111111555555${decrypted(Data[i]['message'], '')}");
+          print(
+              "555551111111111111111texttttttt111111111555555${decrypted(Data[i]['message'], '')}");
         } else if (Data[i]['filetype'] == 'title') {
           print("audio");
           recentchatmsg.add("audio");
@@ -260,12 +260,11 @@ class _ChatListState extends State<ChatList> {
       var decoded = base64.decode(base64.normalize(value));
       print("------rrrrrrr----$decoded");
       var test = utf8.decode(decoded);
-      
-     print("------rrrrrrr----$test");
+
+      print("------rrrrrrr----$test");
       var result = test.replaceAll('mp4', 'mp3');
       print("=========result=====$result");
       return result;
-      
     }
   }
 
@@ -298,7 +297,6 @@ class _ChatListState extends State<ChatList> {
                     onChanged: (value) {
                       setState(() {
                         searchString = value.toLowerCase();
-
                       });
                     },
                     decoration: const InputDecoration(
@@ -629,15 +627,15 @@ class _attatchmentContentsState extends State<attatchmentContents> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
                 backgroundColor: Colors.white,
-               //  content:  Text(name),
-               title: Text('Send $name to ${widget.buddyname} ?',
-               style: TextStyle(
-                fontSize: 18,
-                color: Colors.black,
-                fontWeight: FontWeight.w500
-               ),),
+                //  content:  Text(name),
+                title: Text(
+                  'Send $name to ${widget.buddyname} ?',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500),
+                ),
                 actions: [
-                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -1041,8 +1039,6 @@ class _GroupChatListState extends State<GroupChatList> {
 
   @override
   Widget build(BuildContext context) {
-    print("Building list-----");
-
     print(widget.GroupNames.length);
     return Expanded(
         child: Container(

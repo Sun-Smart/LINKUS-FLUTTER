@@ -191,7 +191,8 @@ class _GroupReplyFileCardState extends State<GroupReplyFileCard> {
 
 class GroupSenderMessageItem extends StatefulWidget {
   const GroupSenderMessageItem(
-      {super.key, required this.sentByMe,
+      {super.key,
+      required this.sentByMe,
       required this.message,
       this.path,
       required this.senttime,
