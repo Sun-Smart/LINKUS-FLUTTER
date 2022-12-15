@@ -1,15 +1,19 @@
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:janus_client/janus_client.dart';
+import 'package:linkus/utils/settings.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-const APP_ID = "b332dd3b5b0b49ca8b0bef3e1a319174";
-const Token = "";
-
+// const APP_ID = "b332dd3b5b0b49ca8b0bef3e1a319174";
+// const Token = "";
+ ClientRoleType? _role = ClientRoleType.clientRoleBroadcaster;
 class VoiceCall extends StatefulWidget {
   var buddyname;
   var buddyImage;
-  VoiceCall({super.key, required this.buddyImage, required this.buddyname});
+  final String? channelName;
+  final ClientRoleType? role;
+  VoiceCall({super.key, required this.buddyImage, required this.buddyname,this.channelName,this.role});
 
   @override
   State<VoiceCall> createState() => _VoiceCallState();
@@ -29,14 +33,60 @@ class _VoiceCallState extends State<VoiceCall> {
     session?.dispose();
   }
 
-  final _channelController = TextEditingController();
-  bool _validateError = false;
+  // final _channelController = TextEditingController();
+  // bool _validateError = false;
+  // ClientRoleType? _role = ClientRoleType.clientRoleBroadcaster;
 
-  // ClientRole _role = ClientRole.Broadcaster;
+  // // ClientRole _role = ClientRole.Broadcaster;
+  // @override
+  // void dispose() {
+  //   _channelController.dispose();
+  //   super.dispose();
+  // }
+
+  final _users = <int>[];
+  final _infoStrings =<String>[];
+  bool muted = false;
+  late RtcEngine _engine;
+
+  @override
+  void initState() {
+    initialize();
+    super.initState();
+  }
+
   @override
   void dispose() {
-    _channelController.dispose();
+    _users.clear();
+    _engine.leaveChannel();
+    
     super.dispose();
+  }
+
+  Future<void>initialize()async{
+    if(appid.isEmpty){
+      setState(() {
+        _infoStrings.add("appid missing");
+        _infoStrings.add("agora engine is not starting");
+      });
+      return;
+      
+    }
+    //initagoraengine
+    // _engine = await RtcEngine.create(appid);
+    await _engine.setChannelProfile(ChannelProfileType.channelProfileLiveBroadcasting);
+    await _engine.setClientRole(role:widget.role!);
+    // _addAgoraEventHandlers();
+    VideoEncoderConfiguration configuration = VideoEncoderConfiguration();
+    configuration.dimensions!=VideoDimensions(width: 1920,height: 1000);
+    await _engine.setVideoEncoderConfiguration(configuration);
+    await _engine.joinChannel(token: token,channelId: widget.channelName!,uid: 0,options: null!);
+
+    // AudioEncodedFrameObserverConfig config =AudioEncodedFrameObserverConfig();
+  }
+
+  void __addAgoraEventHandlers(){
+    
   }
 
   @override
@@ -101,31 +151,5 @@ class _VoiceCallState extends State<VoiceCall> {
     );
   }
 
-  Future<void> onJoin() async {
-    // update input validation
-    setState(() {
-      _channelController.text.isEmpty
-          ? _validateError = true
-          : _validateError = false;
-    });
-    if (_channelController.text.isNotEmpty) {
-      await _handleCameraAndMic(Permission.camera);
-      await _handleCameraAndMic(Permission.microphone);
-      // await
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => VoiceCall(
-      //       channelName: _channelController.text,
-      //       role: _role,
-      //     ),
-      //   ),
-      // );
-    }
-  }
-
-  Future<void> _handleCameraAndMic(Permission permission) async {
-    final status = await permission.request();
-    print(status);
-  }
+  
 }
