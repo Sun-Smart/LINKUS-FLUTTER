@@ -3,7 +3,8 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+// import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -57,7 +58,7 @@ class PersonalChat extends StatefulWidget {
   final String? loggedInName;
   final VoidCallback callback;
   final String? channelName;
-  final ClientRoleType? role;
+  final ClientRole? role;
 
   PersonalChat(
       {super.key,
@@ -993,7 +994,7 @@ class _PersonalChatState extends State<PersonalChat> {
   bool checking = false;
     final _channelController = TextEditingController();
   bool _validateError =false;
-  ClientRoleType? _role = ClientRoleType.clientRoleBroadcaster;
+  ClientRole? _role = ClientRole.Broadcaster;
   
 
   @override
