@@ -2,6 +2,8 @@
 //prefer_typing_uninitialized_variables, unnecessary_string_interpolations, prefer_const_constructors, file_names, use_key_in_widget_constructors, avoid_print, await_only_futures, unused_local_variable, library_prefixes, deprecated_member_use, must_be_immutable, sized_box_for_whitespace
 
 import 'dart:convert';
+import 'dart:developer';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -27,6 +29,7 @@ import 'package:linkus/screens/chatscreen%20Files/voicecall.dart';
 import 'package:linkus/screens/filters/mediaFilter.dart';
 import 'package:linkus/screens/filters/searchFilter.dart';
 import 'package:linkus/variables/Api_Control.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../attachmentWidgets/chatinputbox.dart';
@@ -53,6 +56,8 @@ class PersonalChat extends StatefulWidget {
 
   final String? loggedInName;
   final VoidCallback callback;
+  final String? channelName;
+  final ClientRoleType? role;
 
   PersonalChat(
       {super.key,
@@ -63,7 +68,10 @@ class PersonalChat extends StatefulWidget {
       this.names,
       this.status,
       this.buddyId,
-      this.mobileNumber});
+      this.mobileNumber,
+      this.channelName,
+      this.role
+      });
 
   @override
   State<PersonalChat> createState() => _PersonalChatState();
@@ -170,6 +178,8 @@ class _PersonalChatState extends State<PersonalChat> {
   @override
   void dispose() {
     socket.disconnect();
+    _channelController.dispose();
+    
     super.dispose();
   }
 
@@ -981,6 +991,11 @@ class _PersonalChatState extends State<PersonalChat> {
 
   final TextEditingController SearchController = TextEditingController();
   bool checking = false;
+    final _channelController = TextEditingController();
+  bool _validateError =false;
+  ClientRoleType? _role = ClientRoleType.clientRoleBroadcaster;
+  
+
   @override
   Widget build(BuildContext context) {
     SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -1314,14 +1329,17 @@ class _PersonalChatState extends State<PersonalChat> {
                               onPressed: () {},
                               icon: const Icon(Icons.video_call)),
                           IconButton(
+                            
                               onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => VoiceCall(
-                                              buddyname: widget.names,
-                                              buddyImage: widget.images,
-                                            )));
+                                onJoin();
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) => VoiceCall(
+                                //               buddyname: widget.names,
+                                //               buddyImage: widget.images,
+                                              
+                                //             )));
                               },
                               icon: const Icon(Icons.call)),
                           Theme(
@@ -2255,7 +2273,35 @@ class _PersonalChatState extends State<PersonalChat> {
                   },
                   DocumentSnd: onDocsSend,
                 ))));
+
+
   }
+
+//agora
+Future<void>onJoin()async{
+    setState(() {
+      _channelController.text.isEmpty? _validateError =true : _validateError =false;
+    });
+    if(_channelController.text.isEmpty){
+await _handleCameraAndMic(Permission.camera);
+await _handleCameraAndMic(Permission.microphone);
+await Navigator.push(context, MaterialPageRoute(builder: (context)=>VoiceCall( buddyname: widget.names,
+                                              buddyImage: widget.images,)));
+
+    }
+    
+
+  }//end
+
+  Future<void>_handleCameraAndMic(Permission permission)async{
+    final status = await permission.request();
+    log(status.toString());
+  }
+
+//
+
+
+
 
   Future _pickFile() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.any);
@@ -2293,6 +2339,11 @@ class RecieverMessageItem extends StatefulWidget {
 
   @override
   State<RecieverMessageItem> createState() => _RecieverMessageItemState();
+
+
+
+
+
 }
 
 class _RecieverMessageItemState extends State<RecieverMessageItem> {
